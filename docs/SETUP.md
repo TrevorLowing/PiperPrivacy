@@ -1,93 +1,113 @@
 # PiperPrivacy Setup Guide
 
-## Requirements
+## Prerequisites
 
-- WordPress 6.0+
-- PHP 8.0+
-- MySQL 5.7+ or MariaDB 10.3+
-- Meta Box Pro
-- Fluent Forms Pro
+1. **WordPress Requirements**
+   - WordPress 6.0 or higher
+   - PHP 8.0 or higher
+   - MySQL 5.7+ or MariaDB 10.3+
+
+2. **Required Plugins**
+   - Advanced Custom Fields PRO
 
 ## Installation
 
-1. Upload the plugin to WordPress
-2. Activate required plugins:
-   - Meta Box Pro
-   - Fluent Forms Pro
-3. Activate PiperPrivacy
-4. Configure settings
+### Manual Installation
+1. Download the latest release from the [releases page](https://github.com/TrevorLowing/PiperPrivacy/releases)
+2. Upload the `piper-privacy` folder to `/wp-content/plugins/`
+3. Activate the plugin through the WordPress admin panel
+
+### Development Installation
+1. Clone the repository:
+   ```bash
+   git clone https://github.com/TrevorLowing/PiperPrivacy.git
+   ```
+2. Install dependencies:
+   ```bash
+   cd PiperPrivacy
+   composer install
+   ```
+3. Symlink or copy the `piper-privacy` folder to your WordPress plugins directory
 
 ## Configuration
 
-### 1. Jurisdictional Settings
+### 1. Initial Setup
+1. Navigate to Settings → PiperPrivacy
+2. Configure your organization details
+3. Set up default privacy thresholds
+4. Configure email notifications
 
-Configure applicable privacy laws:
-- GDPR (EU)
-- CCPA/CPRA (California)
-- PIPEDA (Canada)
-- Custom frameworks
+### 2. User Roles
+1. Privacy Administrator
+   - Full access to all privacy management features
+   - Can configure plugin settings
+   - Can manage all collections and assessments
 
-### 2. Industry Settings
+2. Privacy Officer
+   - Can create and manage privacy collections
+   - Can perform assessments
+   - Can review and approve submissions
 
-Enable relevant industry requirements:
-- Healthcare (HIPAA)
-- Financial (GLBA, PCI DSS)
-- Education (FERPA)
-- Custom requirements
+3. Department Manager
+   - Can create privacy collections
+   - Can submit threshold assessments
+   - Limited to own department's records
 
-### 3. Security Settings
+### 3. Custom Fields
+The plugin uses Advanced Custom Fields PRO for:
+- Privacy Collection forms
+- Threshold Assessment forms
+- Impact Assessment forms
 
-Configure security features:
-- Encryption settings
-- Access controls
-- Audit logging
-- Backup settings
+These fields are automatically configured during installation.
 
-### 4. Integration Settings
+## Post-Installation Steps
 
-Set up integrations with:
-- CRM systems
-- Email marketing
-- Analytics
-- Custom integrations
+1. **Verify Installation**
+   - Check plugin activation status
+   - Verify custom post types are registered
+   - Confirm ACF fields are created
 
-## Module Configuration
+2. **Configure Workflows**
+   - Set up approval processes
+   - Configure notification triggers
+   - Define assessment criteria
 
-### Collection Manager
-- Data inventory
-- Processing activities
-- Retention policies
-
-### Impact Assessment
-- DPIA templates
-- Risk assessment
-- Mitigation tracking
-
-### Consent Manager
-- Consent forms
-- Preference center
-- Consent records
-
-### Breach Notification
-- Incident response
-- Notification templates
-- Authority contacts
-
-### Compliance Tracker
-- Audit trails
-- Documentation
-- Reports
+3. **Test Configuration**
+   - Create a test privacy collection
+   - Run a test threshold assessment
+   - Verify email notifications
 
 ## Troubleshooting
 
-Common issues and solutions:
-1. Database connection errors
-2. Plugin conflicts
-3. Performance issues
-4. Integration problems
+### Common Issues
+
+1. **Plugin Activation Fails**
+   - Verify WordPress version compatibility
+   - Check PHP version requirements
+   - Confirm ACF PRO is activated
+
+2. **Forms Not Displaying**
+   - Clear WordPress cache
+   - Verify ACF field groups are properly imported
+   - Check for JavaScript console errors
+
+3. **Permission Issues**
+   - Review user role assignments
+   - Check capability settings
+   - Verify WordPress file permissions
+
+### Debug Mode
+To enable debug mode:
+1. Add to wp-config.php:
+   ```php
+   define('WP_DEBUG', true);
+   define('WP_DEBUG_LOG', true);
+   ```
+2. Check `/wp-content/debug.log` for errors
 
 ## Support
 
-- Documentation: [Link]
-- Support forum: [Link]
-- Email support: support@your-domain.com
+- [Documentation](https://github.com/TrevorLowing/PiperPrivacy/docs)
+- [Issue Tracker](https://github.com/TrevorLowing/PiperPrivacy/issues)
+- [Contributing Guidelines](CONTRIBUTING.md)

@@ -1,56 +1,226 @@
 # PiperPrivacy API Documentation
 
-## REST API Endpoints
+## Overview
 
-### Collection Manager
+PiperPrivacy exposes a REST API for managing privacy collections, thresholds, and impact assessments. All endpoints are accessible via the WordPress REST API with the namespace `piper-privacy/v1`.
 
+## Authentication
+
+The API uses WordPress authentication methods:
+- Application Passwords (recommended)
+- JWT Authentication (if configured)
+- Cookie Authentication (for admin interface)
+
+### Example Authentication
+```bash
+# Using Application Password
+curl -X GET \
+  https://your-site.com/wp-json/piper-privacy/v1/collections \
+  -H 'Authorization: Basic base64_encoded_credentials'
+```
+
+## Endpoints
+
+### Privacy Collections
+
+#### List Collections
 ```http
 GET /wp-json/piper-privacy/v1/collections
-POST /wp-json/piper-privacy/v1/collections
+```
+
+Parameters:
+- `page` (int): Page number
+- `per_page` (int): Items per page
+- `status` (string): Collection status
+- `department` (int): Department ID
+
+Response:
+```json
+{
+  "collections": [
+    {
+      "id": 123,
+      "title": "Customer Data Collection",
+      "status": "active",
+      "department": "Sales",
+      "created_at": "2025-01-19T00:00:00Z",
+      "updated_at": "2025-01-19T00:00:00Z"
+    }
+  ],
+  "total": 50,
+  "pages": 5
+}
+```
+
+#### Get Collection
+```http
 GET /wp-json/piper-privacy/v1/collections/{id}
-PUT /wp-json/piper-privacy/v1/collections/{id}
-DELETE /wp-json/piper-privacy/v1/collections/{id}
 ```
 
-### Impact Assessment
+Response:
+```json
+{
+  "id": 123,
+  "title": "Customer Data Collection",
+  "description": "Collection of customer data for CRM",
+  "status": "active",
+  "department": "Sales",
+  "data_categories": ["personal", "contact"],
+  "retention_period": "12 months",
+  "legal_basis": "consent",
+  "created_at": "2025-01-19T00:00:00Z",
+  "updated_at": "2025-01-19T00:00:00Z"
+}
+```
 
+#### Create Collection
 ```http
-GET /wp-json/piper-privacy/v1/assessments
-POST /wp-json/piper-privacy/v1/assessments
-GET /wp-json/piper-privacy/v1/assessments/{id}
-PUT /wp-json/piper-privacy/v1/assessments/{id}
-DELETE /wp-json/piper-privacy/v1/assessments/{id}
+POST /wp-json/piper-privacy/v1/collections
 ```
 
-### Consent Manager
+Request Body:
+```json
+{
+  "title": "New Data Collection",
+  "description": "Description of collection",
+  "department": "Marketing",
+  "data_categories": ["email", "preferences"],
+  "retention_period": "24 months",
+  "legal_basis": "legitimate_interest"
+}
+```
 
+### Privacy Thresholds
+
+#### List Thresholds
 ```http
-GET /wp-json/piper-privacy/v1/consents
-POST /wp-json/piper-privacy/v1/consents
-GET /wp-json/piper-privacy/v1/consents/{id}
-PUT /wp-json/piper-privacy/v1/consents/{id}
-DELETE /wp-json/piper-privacy/v1/consents/{id}
+GET /wp-json/piper-privacy/v1/thresholds
 ```
 
-### Breach Notification
+Parameters:
+- `collection_id` (int): Related collection ID
+- `status` (string): Assessment status
+- `risk_level` (string): Risk level
 
+#### Create Threshold Assessment
 ```http
-GET /wp-json/piper-privacy/v1/breaches
-POST /wp-json/piper-privacy/v1/breaches
-GET /wp-json/piper-privacy/v1/breaches/{id}
-PUT /wp-json/piper-privacy/v1/breaches/{id}
-DELETE /wp-json/piper-privacy/v1/breaches/{id}
+POST /wp-json/piper-privacy/v1/thresholds
 ```
 
-### Compliance Tracker
+Request Body:
+```json
+{
+  "collection_id": 123,
+  "assessment_type": "initial",
+  "risk_factors": {
+    "data_volume": "high",
+    "sensitivity": "medium",
+    "processing_type": "automated"
+  }
+}
+```
 
+### Privacy Impact Assessments
+
+#### List Impact Assessments
 ```http
-GET /wp-json/piper-privacy/v1/compliance
-POST /wp-json/piper-privacy/v1/compliance
-GET /wp-json/piper-privacy/v1/compliance/{id}
-PUT /wp-json/piper-privacy/v1/compliance/{id}
-DELETE /wp-json/piper-privacy/v1/compliance/{id}
+GET /wp-json/piper-privacy/v1/impact-assessments
 ```
+
+#### Create Impact Assessment
+```http
+POST /wp-json/piper-privacy/v1/impact-assessments
+```
+
+Request Body:
+```json
+{
+  "threshold_id": 456,
+  "collection_id": 123,
+  "assessment_details": {
+    "risks": [],
+    "mitigations": [],
+    "recommendations": []
+  }
+}
+```
+
+## Webhooks
+
+### Available Events
+- `collection.created`
+- `collection.updated`
+- `collection.deleted`
+- `threshold.completed`
+- `impact.required`
+- `impact.completed`
+
+### Webhook Format
+```json
+{
+  "event": "collection.created",
+  "timestamp": "2025-01-19T00:00:00Z",
+  "data": {
+    "id": 123,
+    "type": "collection",
+    "attributes": {}
+  }
+}
+```
+
+## Error Handling
+
+### Error Response Format
+```json
+{
+  "code": "error_code",
+  "message": "Human readable message",
+  "data": {
+    "status": 400,
+    "details": {}
+  }
+}
+```
+
+### Common Error Codes
+- `invalid_request`: Malformed request
+- `unauthorized`: Authentication required
+- `forbidden`: Insufficient permissions
+- `not_found`: Resource not found
+- `validation_failed`: Invalid data
+
+## Rate Limiting
+
+- Default: 50 requests per minute
+- Authenticated: 100 requests per minute
+- Response Headers:
+  - `X-RateLimit-Limit`
+  - `X-RateLimit-Remaining`
+  - `X-RateLimit-Reset`
+
+## Versioning
+
+The API uses semantic versioning (v1, v2, etc.). Breaking changes will result in a new version number.
+
+## Testing
+
+### Sandbox Environment
+```http
+https://your-site.com/wp-json/piper-privacy-sandbox/v1/
+```
+
+### Test Credentials
+```bash
+# Test Application Password
+Username: test_api_user
+Password: test_api_password
+```
+
+## Support
+
+- Report issues on [GitHub](https://github.com/TrevorLowing/PiperPrivacy/issues)
+- API status: [Status Page](https://status.your-site.com)
+- Contact: api-support@your-domain.com
 
 ## PHP Functions
 
@@ -187,4 +357,3 @@ apply_filters('pp_breach_validation_rules', $rules);
 apply_filters('pp_compliance_data', $data, $id);
 apply_filters('pp_compliance_fields', $fields);
 apply_filters('pp_compliance_validation_rules', $rules);
-```

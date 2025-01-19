@@ -1,8 +1,12 @@
 # PiperPrivacy - Technical Architecture
 
+## Overview
+
+PiperPrivacy is a comprehensive WordPress plugin designed to manage privacy assessments, collections, and thresholds. Built on modern WordPress architecture, it follows SOLID principles and WordPress development best practices.
+
 ## Technology Stack
 
-### Core Framework
+### Core Requirements
 - WordPress 6.0+
 - PHP 8.0+
 - MySQL 5.7+ / MariaDB 10.3+
@@ -29,6 +33,149 @@
    - FluentBoards
    - FluentCRM (For notifications)
    - WP Cron Manager (For scheduled tasks)
+
+## Architecture
+
+### 1. Core Structure
+```php
+piper-privacy/
+├── admin/                     # Admin-specific functionality
+│   ├── css/                  # Admin styles
+│   ├── js/                   # Admin scripts
+│   └── partials/             # Admin templates
+├── includes/                 # Core plugin files
+│   ├── core/                # Core functionality
+│   │   ├── class-plugin.php      # Main plugin initialization
+│   │   ├── class-loader.php      # WordPress hooks/filters manager
+│   │   └── class-i18n.php        # Internationalization
+│   ├── modules/             # Feature modules
+│   │   ├── collection-manager/    # Privacy collection management
+│   │   ├── threshold-manager/     # Privacy threshold assessment
+│   │   └── impact-manager/        # Privacy impact assessment
+│   ├── interfaces/          # Core interfaces
+│   └── traits/              # Shared traits
+├── languages/               # Internationalization
+├── public/                  # Public-facing assets
+│   ├── css/
+│   ├── js/
+│   └── partials/
+└── assets/                   # Static resources
+```
+
+### 2. Key Components
+
+#### Collection Manager
+- Manages privacy collection records
+- Handles data minimization
+- Implements retention policies
+- Workflow management
+
+#### Threshold Manager
+- Privacy threshold assessments
+- Risk evaluation
+- Automated decision support
+- Threshold criteria management
+
+#### Impact Manager
+- Privacy impact assessments
+- Detailed risk analysis
+- Mitigation strategies
+- Compliance documentation
+
+### 3. Security Model
+
+#### User Roles and Capabilities
+```
+- Administrator
+  └── All capabilities
+
+- Privacy Officer
+  ├── read_privacy_collection
+  ├── edit_privacy_collections
+  ├── publish_privacy_collections
+  ├── delete_privacy_collections
+  └── ...
+
+- System Owner
+  ├── read_privacy_collection
+  ├── edit_privacy_collection
+  └── edit_privacy_collections
+```
+
+## Data Flow
+
+1. **Collection Creation**
+   - Department initiates privacy collection
+   - Automated threshold assessment
+   - Workflow triggers based on risk level
+
+2. **Assessment Process**
+   - Threshold evaluation
+   - Impact assessment (if required)
+   - Stakeholder reviews
+   - Final approval/rejection
+
+3. **Ongoing Management**
+   - Regular reviews
+   - Retention management
+   - Compliance monitoring
+   - Audit logging
+
+## Integration Points
+
+1. **WordPress Core**
+   - Custom post types
+   - REST API endpoints
+   - Admin interfaces
+   - Capabilities system
+
+2. **External Systems**
+   - Email notifications
+   - API integrations
+   - Export capabilities
+   - Reporting systems
+
+## Performance Considerations
+
+1. **Optimization**
+   - Database query optimization
+   - Cache implementation
+   - Asset minification
+   - Lazy loading
+
+2. **Scalability**
+   - Modular architecture
+   - Efficient data structures
+   - Background processing
+   - Resource management
+
+## Security Measures
+
+1. **Data Protection**
+   - Input sanitization
+   - Output escaping
+   - Nonce verification
+   - Capability checks
+
+2. **Privacy**
+   - Data encryption
+   - Access controls
+   - Audit logging
+   - Data minimization
+
+## Future Considerations
+
+1. **Planned Enhancements**
+   - AI-powered risk assessment
+   - Advanced reporting
+   - Integration templates
+   - Workflow automation
+
+2. **Extensibility**
+   - Plugin hooks
+   - Filter system
+   - Custom endpoints
+   - Integration APIs
 
 ## Plugin Architecture
 
@@ -147,7 +294,7 @@ $wpdb->prefix . 'piper_privacy_workflow_history'
 ```
 
 ### 5. Role-Based Access Control
-```php
+```
 - Administrator
   └── All capabilities
 
