@@ -39,9 +39,8 @@ class FieldsManager {
     private function register_field_classes() {
         $this->registrars = [
             new CollectionFields(),
-            // Add other field classes here as they're created
-            // new ThresholdFields(),
-            // new ImpactFields(),
+            new ThresholdFields(),
+            new ImpactFields(),
         ];
     }
 
