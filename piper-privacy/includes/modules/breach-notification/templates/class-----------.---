@@ -1,0 +1,139 @@
+<?php
+/**
+ * Breach list template
+ *
+ * @package     PiperPrivacy
+ * @subpackage  Modules\BreachNotification
+ */
+
+// If this file is called directly, abort.
+if (!defined('WPINC')) {
+    die;
+}
+?>
+
+<div class="pp-breach-list">
+    <?php if (empty($breaches)) : ?>
+        <p class="pp-no-breaches">
+            <?php esc_html_e('No breach incidents found.', 'piper-privacy'); ?>
+        </p>
+    <?php else : ?>
+        <table class="wp-list-table widefat fixed striped">
+            <thead>
+                <tr>
+                    <th scope="col" class="column-title">
+                        <?php esc_html_e('Title', 'piper-privacy'); ?>
+                    </th>
+                    <th scope="col" class="column-severity">
+                        <?php esc_html_e('Severity', 'piper-privacy'); ?>
+                    </th>
+                    <th scope="col" class="column-status">
+                        <?php esc_html_e('Status', 'piper-privacy'); ?>
+                    </th>
+                    <th scope="col" class="column-date">
+                        <?php esc_html_e('Detection Date', 'piper-privacy'); ?>
+                    </th>
+                    <th scope="col" class="column-affected">
+                        <?php esc_html_e('Affected Users', 'piper-privacy'); ?>
+                    </th>
+                    <th scope="col" class="column-notifications">
+                        <?php esc_html_e('Notifications', 'piper-privacy'); ?>
+                    </th>
+                    <th scope="col" class="column-actions">
+                        <?php esc_html_e('Actions', 'piper-privacy'); ?>
+                    </th>
+                </tr>
+            </thead>
+            <tbody>
+                <?php foreach ($breaches as $breach) : ?>
+                    <tr>
+                        <td class="column-title">
+                            <strong>
+                                <a href="#" class="pp-view-breach" data-id="<?php echo esc_attr($breach['id']); ?>">
+                                    <?php echo esc_html($breach['title']); ?>
+                                </a>
+                            </strong>
+                            <div class="row-actions">
+                                <span class="edit">
+                                    <a href="#" class="pp-edit-breach" data-id="<?php echo esc_attr($breach['id']); ?>">
+                                        <?php esc_html_e('Edit', 'piper-privacy'); ?>
+                                    </a> |
+                                </span>
+                                <span class="notify">
+                                    <a href="#" class="pp-send-notification" data-id="<?php echo esc_attr($breach['id']); ?>">
+                                        <?php esc_html_e('Send Notification', 'piper-privacy'); ?>
+                                    </a> |
+                                </span>
+                                <span class="delete">
+                                    <a href="#" class="pp-delete-breach" data-id="<?php echo esc_attr($breach['id']); ?>">
+                                        <?php esc_html_e('Delete', 'piper-privacy'); ?>
+                                    </a>
+                                </span>
+                            </div>
+                        </td>
+                        <td class="column-severity">
+                            <?php echo $this->format_severity($breach['severity']); ?>
+                        </td>
+                        <td class="column-status">
+                            <?php echo $this->format_status($breach['status']); ?>
+                        </td>
+                        <td class="column-date">
+                            <?php echo esc_html(get_date_from_gmt($breach['detection_date'])); ?>
+                        </td>
+                        <td class="column-affected">
+                            <?php
+                            if (!empty($breach['affected_users'])) {
+                                echo esc_html(count($breach['affected_users']));
+                            } else {
+                                esc_html_e('N/A', 'piper-privacy');
+                            }
+                            ?>
+                        </td>
+                        <td class="column-notifications">
+                            <?php
+                            if (!empty($breach['notifications'])) {
+                                $pending = 0;
+                                $sent = 0;
+                                foreach ($breach['notifications'] as $notification) {
+                                    if ('pending' === $notification['status']) {
+                                        $pending++;
+                                    } elseif ('sent' === $notification['status']) {
+                                        $sent++;
+                                    }
+                                }
+                                printf(
+                                    /* translators: 1: number of sent notifications, 2: number of pending notifications */
+                                    esc_html__('%1$d sent, %2$d pending', 'piper-privacy'),
+                                    $sent,
+                                    $pending
+                                );
+                            } else {
+                                esc_html_e('No notifications', 'piper-privacy');
+                            }
+                            ?>
+                        </td>
+                        <td class="column-actions">
+                            <select class="pp-status-action" data-id="<?php echo esc_attr($breach['id']); ?>">
+                                <option value=""><?php esc_html_e('Change Status', 'piper-privacy'); ?></option>
+                                <?php
+                                $statuses = get_terms([
+                                    'taxonomy' => 'pp_breach_status',
+                                    'hide_empty' => false,
+                                ]);
+                                foreach ($statuses as $status) {
+                                    printf(
+                                        '<option value="%s" %s>%s</option>',
+                                        esc_attr($status->slug),
+                                        selected($breach['status'], $status->slug, false),
+                                        esc_html($status->name)
+                                    );
+                                }
+                                ?>
+                            </select>
+                        </td>
+                    </tr>
+                <?php endforeach; ?>
+            </tbody>
+        </table>
+    <?php endif; ?>
+</div>

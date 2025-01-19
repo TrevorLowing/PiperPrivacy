@@ -1,0 +1,50 @@
+<?php
+/**
+ * Dashboard widget template
+ *
+ * @package     PiperPrivacy
+ * @subpackage  Modules\BreachNotification
+ */
+
+// If this file is called directly, abort.
+if (!defined('WPINC')) {
+    die;
+}
+?>
+
+<div class="pp-breach-dashboard-widget">
+    <?php if (empty($breaches)) : ?>
+        <p><?php esc_html_e('No recent breach incidents.', 'piper-privacy'); ?></p>
+    <?php else : ?>
+        <table class="widefat">
+            <thead>
+                <tr>
+                    <th><?php esc_html_e('Title', 'piper-privacy'); ?></th>
+                    <th><?php esc_html_e('Severity', 'piper-privacy'); ?></th>
+                    <th><?php esc_html_e('Status', 'piper-privacy'); ?></th>
+                    <th><?php esc_html_e('Detection Date', 'piper-privacy'); ?></th>
+                </tr>
+            </thead>
+            <tbody>
+                <?php foreach ($breaches as $breach) : ?>
+                    <tr>
+                        <td>
+                            <a href="<?php echo esc_url(admin_url('admin.php?page=pp-breaches&view=single&id=' . $breach['id'])); ?>">
+                                <?php echo esc_html($breach['title']); ?>
+                            </a>
+                        </td>
+                        <td><?php echo $this->format_severity($breach['severity']); ?></td>
+                        <td><?php echo $this->format_status($breach['status']); ?></td>
+                        <td><?php echo esc_html(get_date_from_gmt($breach['detection_date'])); ?></td>
+                    </tr>
+                <?php endforeach; ?>
+            </tbody>
+        </table>
+
+        <p class="pp-widget-footer">
+            <a href="<?php echo esc_url(admin_url('admin.php?page=pp-breaches')); ?>">
+                <?php esc_html_e('View All Breaches', 'piper-privacy'); ?> →
+            </a>
+        </p>
+    <?php endif; ?>
+</div>

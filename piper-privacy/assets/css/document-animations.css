@@ -1,0 +1,206 @@
+// Document Handling Animations
+@layer document-animations {
+    // Document Creation
+    @keyframes document-create {
+        0% {
+            transform: translateY(20px) scale(0.8);
+            opacity: 0;
+        }
+        50% {
+            transform: translateY(-5px) scale(1.05);
+            opacity: 0.7;
+        }
+        100% {
+            transform: translateY(0) scale(1);
+            opacity: 1;
+        }
+    }
+
+    // Document Processing
+    @keyframes document-process {
+        0% {
+            clip-path: inset(0 100% 0 0);
+        }
+        100% {
+            clip-path: inset(0 0 0 0);
+        }
+    }
+
+    // Document Scanning
+    @keyframes document-scan {
+        0% {
+            background-position: -200% 0;
+        }
+        100% {
+            background-position: 300% 0;
+        }
+    }
+
+    // Apply to Elements
+    .doc-creating {
+        animation: document-create 0.6s var(--ease-bounce);
+    }
+
+    .doc-processing {
+        animation: document-process 1s var(--ease-out);
+        background: linear-gradient(
+            90deg,
+            transparent,
+            rgba(59, 130, 246, 0.1),
+            transparent
+        );
+        background-size: 200% 100%;
+        animation: document-scan 2s linear infinite;
+    }
+
+    // Document Types
+    .doc-pta {
+        --doc-color: rgb(59, 130, 246);  // Blue
+    }
+
+    .doc-pia {
+        --doc-color: rgb(236, 72, 153);  // Pink
+    }
+
+    .doc-review {
+        --doc-color: rgb(34, 197, 94);   // Green
+    }
+
+    // Document States
+    .doc-draft {
+        border-left: 3px solid var(--doc-color);
+        padding-left: 1rem;
+    }
+
+    .doc-final {
+        border: 1px solid var(--doc-color);
+        border-radius: 0.375rem;
+        padding: 1rem;
+    }
+
+    // Document Actions
+    .doc-action {
+        position: relative;
+        overflow: hidden;
+    }
+
+    .doc-action::after {
+        content: '';
+        position: absolute;
+        inset: 0;
+        background: var(--doc-color);
+        opacity: 0;
+        transition: opacity 0.2s;
+    }
+
+    .doc-action:hover::after {
+        opacity: 0.1;
+    }
+
+    // Document Progress
+    .doc-progress-bar {
+        height: 2px;
+        background: #e5e7eb;
+        overflow: hidden;
+    }
+
+    .doc-progress-value {
+        height: 100%;
+        background: var(--doc-color);
+        transform-origin: left;
+        animation: doc-progress 1s var(--ease-out);
+    }
+
+    @keyframes doc-progress {
+        from { transform: scaleX(0); }
+        to { transform: scaleX(var(--progress, 1)); }
+    }
+
+    // Document Status
+    .doc-status {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        padding: 0.25rem 0.75rem;
+        border-radius: 9999px;
+        font-size: 0.875rem;
+        background: rgba(var(--doc-color-rgb), 0.1);
+        color: var(--doc-color);
+    }
+
+    .doc-status::before {
+        content: '';
+        width: 0.5rem;
+        height: 0.5rem;
+        border-radius: 9999px;
+        background: currentColor;
+    }
+
+    // Document Generation
+    .doc-generating {
+        position: relative;
+    }
+
+    .doc-generating::after {
+        content: '';
+        position: absolute;
+        inset: 0;
+        background: linear-gradient(
+            90deg,
+            transparent,
+            rgba(var(--doc-color-rgb), 0.1),
+            transparent
+        );
+        background-size: 200% 100%;
+        animation: document-scan 2s linear infinite;
+    }
+
+    // Document Success
+    .doc-complete {
+        animation: doc-complete 0.5s var(--ease-bounce);
+    }
+
+    @keyframes doc-complete {
+        0% {
+            transform: scale(1);
+        }
+        50% {
+            transform: scale(1.05);
+        }
+        100% {
+            transform: scale(1);
+        }
+    }
+
+    // Document Loading States
+    .doc-loading {
+        position: relative;
+        pointer-events: none;
+    }
+
+    .doc-loading::before {
+        content: '';
+        position: absolute;
+        inset: 0;
+        background: rgba(255, 255, 255, 0.8);
+        z-index: 1;
+    }
+
+    .doc-loading::after {
+        content: '';
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        width: 1.5rem;
+        height: 1.5rem;
+        border: 2px solid var(--doc-color);
+        border-top-color: transparent;
+        border-radius: 50%;
+        animation: doc-spin 0.6s linear infinite;
+        z-index: 2;
+    }
+
+    @keyframes doc-spin {
+        to { transform: translate(-50%, -50%) rotate(360deg); }
+    }
+}

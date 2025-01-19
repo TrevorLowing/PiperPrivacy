@@ -1,0 +1,181 @@
+// Workflow Transition Utilities
+@layer transitions {
+    // Stage Transitions
+    .transition-stage {
+        @apply transform transition-all duration-300 ease-in-out;
+    }
+
+    // Enter States
+    .stage-enter {
+        @apply opacity-0 -translate-x-4;
+    }
+
+    .stage-enter-active {
+        @apply opacity-100 translate-x-0;
+    }
+
+    // Exit States
+    .stage-exit {
+        @apply opacity-100;
+    }
+
+    .stage-exit-active {
+        @apply opacity-0 translate-x-4;
+    }
+
+    // Progress Transitions
+    .progress-transition {
+        @apply transition-all duration-500 ease-out;
+    }
+
+    // Status Change Indicators
+    .status-change {
+        @apply relative overflow-hidden;
+    }
+
+    .status-change::after {
+        @apply absolute inset-0 bg-current opacity-0 transition-opacity duration-300;
+        content: '';
+    }
+
+    .status-change-active::after {
+        @apply opacity-10;
+    }
+
+    // Loading States
+    .loading-overlay {
+        @apply absolute inset-0 bg-white bg-opacity-75 flex items-center justify-center;
+        z-index: 10;
+    }
+
+    .loading-spinner {
+        @apply animate-spin h-8 w-8 border-4 border-blue-500 border-t-transparent rounded-full;
+    }
+}
+
+// Flow Indicators
+@layer flow-indicators {
+    // Arrow Connections
+    .flow-arrow {
+        @apply relative flex items-center justify-center;
+    }
+
+    .flow-arrow::after {
+        @apply absolute w-4 h-4 border-t-2 border-r-2 border-current transform rotate-45;
+        content: '';
+    }
+
+    .flow-arrow-horizontal {
+        @apply w-8 mx-2;
+    }
+
+    .flow-arrow-vertical {
+        @apply h-8 my-2 transform rotate-90;
+    }
+
+    // Connection Lines
+    .flow-line {
+        @apply border-l-2 border-current h-full mx-auto;
+        width: 1px;
+    }
+
+    // Stage Connection Points
+    .connection-point {
+        @apply w-3 h-3 rounded-full border-2 border-current bg-white;
+    }
+
+    .connection-active {
+        @apply bg-current;
+    }
+}
+
+// Stage Progress
+@layer progress {
+    // Multi-step Progress
+    .progress-steps {
+        @apply flex items-center;
+    }
+
+    .progress-step {
+        @apply flex items-center;
+    }
+
+    .progress-step-number {
+        @apply w-8 h-8 rounded-full flex items-center justify-center text-sm font-medium;
+    }
+
+    .progress-step-line {
+        @apply flex-1 h-0.5 mx-2;
+    }
+
+    // Circular Progress
+    .progress-circle {
+        @apply relative inline-flex;
+    }
+
+    .progress-circle-bg {
+        @apply absolute inset-0 border-4 border-gray-200 rounded-full;
+    }
+
+    .progress-circle-fill {
+        @apply absolute inset-0 border-4 rounded-full transition-all duration-500;
+        clip-path: circle(var(--progress-value) at center);
+    }
+}
+
+// Interactive Elements
+@layer interactive {
+    // Stage Controls
+    .stage-control {
+        @apply relative cursor-pointer select-none;
+    }
+
+    .stage-control-hover {
+        @apply absolute inset-0 bg-current opacity-0 transition-opacity duration-200;
+    }
+
+    .stage-control:hover .stage-control-hover {
+        @apply opacity-10;
+    }
+
+    // Action Buttons
+    .action-button {
+        @apply inline-flex items-center px-4 py-2 rounded-md transition-all duration-200;
+    }
+
+    .action-button-icon {
+        @apply -ml-1 mr-2 h-4 w-4;
+    }
+
+    // Stage Navigation
+    .stage-nav {
+        @apply flex justify-between items-center mt-4 pt-4 border-t;
+    }
+
+    .stage-nav-button {
+        @apply flex items-center px-3 py-2 rounded-md text-sm font-medium transition-colors;
+    }
+}
+
+// Workflow Timeline
+@layer timeline {
+    .timeline {
+        @apply relative pl-8;
+    }
+
+    .timeline-marker {
+        @apply absolute left-0 w-6 h-6 rounded-full border-2 flex items-center justify-center;
+    }
+
+    .timeline-line {
+        @apply absolute left-3 top-6 bottom-0 w-0.5 bg-current opacity-20;
+    }
+
+    .timeline-content {
+        @apply relative pb-6;
+    }
+
+    .timeline-date {
+        @apply text-sm text-gray-500 mb-1;
+    }
+}

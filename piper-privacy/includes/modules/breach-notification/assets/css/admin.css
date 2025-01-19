@@ -1,0 +1,654 @@
+/**
+ * Breach Notification Admin Styles
+ *
+ * @package     PiperPrivacy
+ * @subpackage  Modules\BreachNotification
+ */
+
+/* Container Styles */
+.pp-breach-container {
+    margin: 20px 0;
+}
+
+/* Filters */
+.pp-breach-filters {
+    margin-bottom: 20px;
+    display: flex;
+    gap: 10px;
+    align-items: center;
+}
+
+.pp-breach-filters select,
+.pp-breach-filters input {
+    min-width: 200px;
+}
+
+/* List Table */
+.pp-breach-list table {
+    border-spacing: 0;
+    width: 100%;
+    clear: both;
+}
+
+.pp-breach-list th {
+    padding: 8px 10px;
+    text-align: left;
+    line-height: 1.3em;
+}
+
+.pp-breach-list td {
+    padding: 8px 10px;
+    line-height: 1.3em;
+    vertical-align: middle;
+}
+
+/* Severity Badges */
+.pp-severity {
+    display: inline-block;
+    padding: 4px 8px;
+    border-radius: 3px;
+    font-size: 12px;
+    font-weight: 600;
+    text-transform: uppercase;
+}
+
+.pp-severity-critical {
+    background-color: #dc3545;
+    color: #fff;
+}
+
+.pp-severity-high {
+    background-color: #fd7e14;
+    color: #fff;
+}
+
+.pp-severity-medium {
+    background-color: #ffc107;
+    color: #000;
+}
+
+.pp-severity-low {
+    background-color: #28a745;
+    color: #fff;
+}
+
+/* Status Badges */
+.pp-status {
+    display: inline-block;
+    padding: 4px 8px;
+    border-radius: 3px;
+    font-size: 12px;
+    font-weight: 600;
+    text-transform: uppercase;
+}
+
+.pp-status-draft {
+    background-color: #6c757d;
+    color: #fff;
+}
+
+.pp-status-detected {
+    background-color: #007bff;
+    color: #fff;
+}
+
+.pp-status-assessing {
+    background-color: #17a2b8;
+    color: #fff;
+}
+
+.pp-status-confirmed {
+    background-color: #dc3545;
+    color: #fff;
+}
+
+.pp-status-notifying {
+    background-color: #fd7e14;
+    color: #fff;
+}
+
+.pp-status-mitigating {
+    background-color: #ffc107;
+    color: #000;
+}
+
+.pp-status-resolved {
+    background-color: #28a745;
+    color: #fff;
+}
+
+.pp-status-closed {
+    background-color: #6c757d;
+    color: #fff;
+}
+
+/* Modal Styles */
+.pp-modal {
+    display: none;
+    position: fixed;
+    z-index: 100000;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    overflow: auto;
+    background-color: rgba(0, 0, 0, 0.4);
+}
+
+.pp-modal-content {
+    position: relative;
+    background-color: #fefefe;
+    margin: 5% auto;
+    padding: 20px;
+    border: 1px solid #888;
+    width: 80%;
+    max-width: 800px;
+    border-radius: 4px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.pp-modal-close {
+    position: absolute;
+    right: 20px;
+    top: 10px;
+    font-size: 28px;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.pp-modal-close:hover {
+    color: #666;
+}
+
+/* Form Styles */
+.pp-breach-form .form-field,
+.pp-notification-form .form-field {
+    margin-bottom: 15px;
+}
+
+.pp-breach-form label,
+.pp-notification-form label {
+    display: block;
+    margin-bottom: 5px;
+    font-weight: 600;
+}
+
+.pp-breach-form input[type="text"],
+.pp-breach-form input[type="datetime-local"],
+.pp-breach-form textarea,
+.pp-breach-form select,
+.pp-notification-form input[type="text"],
+.pp-notification-form input[type="datetime-local"],
+.pp-notification-form textarea,
+.pp-notification-form select {
+    width: 100%;
+    max-width: 100%;
+    margin: 0;
+}
+
+.pp-breach-form textarea {
+    min-height: 100px;
+}
+
+/* Timeline Styles */
+.pp-timeline {
+    margin: 20px 0;
+    position: relative;
+}
+
+.pp-timeline::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 15px;
+    height: 100%;
+    width: 2px;
+    background: #ddd;
+}
+
+.pp-timeline-entry {
+    position: relative;
+    margin-bottom: 20px;
+    padding-left: 45px;
+}
+
+.pp-timeline-icon {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background: #fff;
+    border: 2px solid #007cba;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.pp-timeline-content {
+    background: #f8f9fa;
+    padding: 15px;
+    border-radius: 4px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+/* Notification Status */
+.pp-notification-status {
+    display: inline-block;
+    padding: 3px 6px;
+    border-radius: 3px;
+    font-size: 12px;
+    font-weight: 600;
+}
+
+.pp-status-pending {
+    background-color: #ffc107;
+    color: #000;
+}
+
+.pp-status-sent {
+    background-color: #28a745;
+    color: #fff;
+}
+
+.pp-status-failed {
+    background-color: #dc3545;
+    color: #fff;
+}
+
+/* Dashboard Widget */
+.pp-breach-dashboard-widget table {
+    margin: 0 -12px;
+    width: calc(100% + 24px);
+}
+
+.pp-breach-dashboard-widget td,
+.pp-breach-dashboard-widget th {
+    padding: 8px 12px;
+}
+
+.pp-widget-footer {
+    margin: 12px -12px -12px;
+    padding: 12px;
+    background: #f8f9fa;
+    border-top: 1px solid #ddd;
+    text-align: right;
+}
+
+/* Select2 Customization */
+.select2-container {
+    width: 100% !important;
+}
+
+.select2-container .select2-selection--multiple {
+    min-height: 35px;
+}
+
+.select2-container--default .select2-selection--multiple .select2-selection__choice {
+    background-color: #007cba;
+    color: #fff;
+    border: none;
+    padding: 3px 8px;
+}
+
+.select2-container--default .select2-selection--multiple .select2-selection__choice__remove {
+    color: #fff;
+    margin-right: 5px;
+}
+
+/* Responsive Styles */
+@media screen and (max-width: 782px) {
+    .pp-breach-filters {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .pp-breach-filters select,
+    .pp-breach-filters input {
+        width: 100%;
+    }
+
+    .pp-modal-content {
+        width: 95%;
+        margin: 10% auto;
+    }
+}
+
+/* Risk Assessment Styles */
+.pp-risk-assessment {
+    background: #fff;
+    border: 1px solid #ccd0d4;
+    box-shadow: 0 1px 1px rgba(0, 0, 0, 0.04);
+    margin: 20px 0;
+    padding: 20px;
+}
+
+.pp-risk-header {
+    display: flex;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.pp-risk-score {
+    font-size: 36px;
+    font-weight: bold;
+    margin-right: 20px;
+}
+
+.pp-risk-severity {
+    padding: 5px 10px;
+    border-radius: 3px;
+    font-weight: bold;
+    text-transform: uppercase;
+}
+
+.pp-risk-severity.low {
+    background: #d4edda;
+    color: #155724;
+}
+
+.pp-risk-severity.medium {
+    background: #fff3cd;
+    color: #856404;
+}
+
+.pp-risk-severity.high {
+    background: #f8d7da;
+    color: #721c24;
+}
+
+.pp-risk-severity.critical {
+    background: #dc3545;
+    color: #fff;
+}
+
+.pp-risk-factors {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 20px;
+    margin-bottom: 20px;
+}
+
+.pp-risk-factor {
+    background: #f8f9fa;
+    border: 1px solid #dee2e6;
+    border-radius: 4px;
+    padding: 15px;
+}
+
+.pp-risk-factor h4 {
+    margin: 0 0 10px 0;
+    color: #23282d;
+}
+
+.pp-factor-score {
+    font-size: 24px;
+    font-weight: bold;
+    color: #007cba;
+    margin-bottom: 5px;
+}
+
+.pp-factor-weight {
+    color: #666;
+    font-size: 12px;
+    margin-bottom: 10px;
+}
+
+.pp-factor-details {
+    font-size: 13px;
+    line-height: 1.5;
+}
+
+/* Notification Requirements */
+.pp-notification-requirements {
+    margin-bottom: 20px;
+}
+
+.pp-requirement {
+    display: flex;
+    align-items: center;
+    padding: 10px;
+    border: 1px solid #dee2e6;
+    margin-bottom: 5px;
+    background: #fff;
+}
+
+.pp-requirement.required {
+    border-left: 4px solid #46b450;
+}
+
+.pp-requirement.not-required {
+    border-left: 4px solid #dc3232;
+}
+
+.pp-requirement .dashicons {
+    margin-right: 10px;
+}
+
+.pp-requirement .dashicons-yes {
+    color: #46b450;
+}
+
+.pp-requirement .dashicons-no {
+    color: #dc3232;
+}
+
+/* Recommendations */
+.pp-recommendations {
+    margin-bottom: 20px;
+}
+
+.pp-recommendation-category {
+    background: #fff;
+    border: 1px solid #dee2e6;
+    border-radius: 4px;
+    margin-bottom: 15px;
+    padding: 15px;
+}
+
+.pp-recommendation-category h4 {
+    margin: 0 0 10px 0;
+    color: #23282d;
+}
+
+.pp-recommendation-category ul {
+    margin: 0;
+    padding-left: 20px;
+}
+
+.pp-recommendation-category li {
+    margin-bottom: 5px;
+}
+
+/* Deadlines */
+.pp-deadlines {
+    margin-bottom: 20px;
+}
+
+.pp-deadline {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px;
+    background: #fff;
+    border: 1px solid #dee2e6;
+    margin-bottom: 5px;
+}
+
+.pp-deadline-type {
+    font-weight: bold;
+}
+
+.pp-deadline-date {
+    color: #666;
+}
+
+/* Compliance Analysis */
+.pp-compliance-analysis {
+    background: #fff;
+    border: 1px solid #ccd0d4;
+    box-shadow: 0 1px 1px rgba(0, 0, 0, 0.04);
+    margin: 20px 0;
+    padding: 20px;
+}
+
+.pp-frameworks {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 20px;
+    margin-bottom: 20px;
+}
+
+.pp-framework {
+    background: #f8f9fa;
+    border: 1px solid #dee2e6;
+    border-radius: 4px;
+    padding: 15px;
+}
+
+.pp-framework h4 {
+    margin: 0 0 15px 0;
+    color: #23282d;
+    border-bottom: 1px solid #dee2e6;
+    padding-bottom: 10px;
+}
+
+.pp-notification {
+    margin-bottom: 15px;
+    padding: 10px;
+    background: #fff;
+    border: 1px solid #dee2e6;
+}
+
+.pp-notification.required {
+    border-left: 4px solid #46b450;
+}
+
+.pp-notification.not-required {
+    border-left: 4px solid #dc3232;
+}
+
+.pp-notification h5 {
+    margin: 0 0 10px 0;
+    color: #23282d;
+}
+
+.pp-notification-deadline {
+    color: #666;
+    font-size: 13px;
+    margin-bottom: 10px;
+}
+
+.pp-exceptions {
+    background: #f8f9fa;
+    padding: 10px;
+    margin-top: 10px;
+    border-radius: 3px;
+}
+
+.pp-exceptions h6 {
+    margin: 0 0 5px 0;
+    color: #23282d;
+}
+
+.pp-exceptions ul {
+    margin: 0;
+    padding-left: 20px;
+}
+
+.pp-documentation {
+    margin-top: 15px;
+}
+
+.pp-documentation h5 {
+    margin: 0 0 10px 0;
+    color: #23282d;
+}
+
+.pp-documentation ul {
+    margin: 0 0 15px 0;
+    padding-left: 20px;
+}
+
+.pp-retention {
+    color: #666;
+    font-size: 13px;
+    padding: 5px 0;
+}
+
+/* Compliance Summary */
+.pp-compliance-summary {
+    background: #f8f9fa;
+    border: 1px solid #dee2e6;
+    border-radius: 4px;
+    padding: 15px;
+    margin-bottom: 20px;
+}
+
+.pp-summary-item {
+    display: flex;
+    align-items: center;
+    margin-bottom: 10px;
+}
+
+.pp-summary-item:last-child {
+    margin-bottom: 0;
+}
+
+.pp-summary-item .dashicons {
+    margin-right: 10px;
+}
+
+.pp-summary-item.required .dashicons-yes {
+    color: #46b450;
+}
+
+.pp-summary-item .dashicons-clock {
+    color: #007cba;
+}
+
+/* Loading States */
+.loading {
+    position: relative;
+    min-height: 100px;
+}
+
+.loading::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(255, 255, 255, 0.7);
+    z-index: 1;
+}
+
+.spinner.is-active {
+    visibility: visible;
+    float: none;
+    margin: 0;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 2;
+}
+
+/* Responsive Adjustments */
+@media screen and (max-width: 782px) {
+    .pp-risk-factors,
+    .pp-frameworks {
+        grid-template-columns: 1fr;
+    }
+
+    .pp-deadline {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .pp-deadline-date {
+        margin-top: 5px;
+    }
+}

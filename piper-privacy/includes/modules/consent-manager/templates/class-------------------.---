@@ -1,0 +1,97 @@
+<?php
+/**
+ * Consent preferences template
+ *
+ * @package     PiperPrivacy
+ * @subpackage  Modules\ConsentManager
+ */
+
+// If this file is called directly, abort.
+if (!defined('WPINC')) {
+    die;
+}
+
+$user = get_userdata($user_id);
+if (!$user) {
+    return;
+}
+
+// Group consents by type
+$grouped_consents = [];
+foreach ($consents as $consent) {
+    $type = $consent['consent_type'];
+    if (!isset($grouped_consents[$type])) {
+        $grouped_consents[$type] = [];
+    }
+    $grouped_consents[$type][] = $consent;
+}
+?>
+
+<div class="pp-consent-preferences">
+    <h2>
+        <?php
+        /* translators: %s: user display name */
+        printf(esc_html__('Consent Preferences for %s', 'piper-privacy'), esc_html($user->display_name));
+        ?>
+    </h2>
+
+    <?php if (empty($grouped_consents)) : ?>
+        <div class="pp-no-items">
+            <p><?php esc_html_e('No consent records found.', 'piper-privacy'); ?></p>
+        </div>
+    <?php else : ?>
+        <div class="pp-consent-groups">
+            <?php foreach ($grouped_consents as $type => $type_consents) :
+                // Get the latest consent for this type
+                $latest = reset($type_consents);
+                $is_active = 'granted' === $latest['status'];
+                ?>
+                <div class="pp-consent-group">
+                    <div class="pp-consent-group-header">
+                        <h3><?php echo esc_html(ucfirst($type)); ?></h3>
+                        <div class="pp-consent-status">
+                            <span class="pp-status pp-status-<?php echo esc_attr($latest['status']); ?>">
+                                <?php echo esc_html(ucfirst($latest['status'])); ?>
+                            </span>
+                            <?php if ($is_active && !empty($latest['expiry_date'])) : ?>
+                                <span class="pp-expiry">
+                                    <?php
+                                    /* translators: %s: expiry date */
+                                    printf(
+                                        esc_html__('Expires: %s', 'piper-privacy'),
+                                        esc_html(get_date_from_gmt($latest['expiry_date']))
+                                    );
+                                    ?>
+                                </span>
+                            <?php endif; ?>
+                        </div>
+                    </div>
+
+                    <div class="pp-consent-group-body">
+                        <?php if ($is_active) : ?>
+                            <button type="button" class="button pp-withdraw-consent" 
+                                    data-type="<?php echo esc_attr($type); ?>"
+                                    data-user="<?php echo esc_attr($user_id); ?>">
+                                <?php esc_html_e('Withdraw Consent', 'piper-privacy'); ?>
+                            </button>
+                        <?php else : ?>
+                            <button type="button" class="button button-primary pp-give-consent"
+                                    data-type="<?php echo esc_attr($type); ?>"
+                                    data-user="<?php echo esc_attr($user_id); ?>">
+                                <?php esc_html_e('Give Consent', 'piper-privacy'); ?>
+                            </button>
+                        <?php endif; ?>
+
+                        <button type="button" class="button pp-view-history"
+                                data-type="<?php echo esc_attr($type); ?>"
+                                data-user="<?php echo esc_attr($user_id); ?>">
+                            <?php esc_html_e('View History', 'piper-privacy'); ?>
+                        </button>
+                    </div>
+
+                    <div class="pp-consent-history" style="display: none;"></div>
+                </div>
+            <?php endforeach; ?>
+        </div>
+    <?php endif; ?>
+</div>

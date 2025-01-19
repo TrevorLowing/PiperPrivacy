@@ -1,0 +1,291 @@
+<?php
+/**
+ * Admin page template for Breach Notification
+ *
+ * @package     PiperPrivacy
+ * @subpackage  Modules\BreachNotification
+ */
+
+// If this file is called directly, abort.
+if (!defined('WPINC')) {
+    die;
+}
+?>
+
+<div class="wrap">
+    <h1 class="wp-heading-inline"><?php esc_html_e('Data Breach Notification', 'piper-privacy'); ?></h1>
+    <a href="#" class="page-title-action" id="pp-add-breach"><?php esc_html_e('Add New', 'piper-privacy'); ?></a>
+    <hr class="wp-header-end">
+
+    <div class="pp-breach-container">
+        <!-- Filters -->
+        <div class="pp-breach-filters">
+            <select id="pp-severity-filter">
+                <option value=""><?php esc_html_e('All Severities', 'piper-privacy'); ?></option>
+                <?php
+                $severities = get_terms([
+                    'taxonomy' => 'pp_breach_severity',
+                    'hide_empty' => false,
+                ]);
+                foreach ($severities as $severity) {
+                    printf(
+                        '<option value="%s">%s</option>',
+                        esc_attr($severity->slug),
+                        esc_html($severity->name)
+                    );
+                }
+                ?>
+            </select>
+
+            <select id="pp-status-filter">
+                <option value=""><?php esc_html_e('All Statuses', 'piper-privacy'); ?></option>
+                <?php
+                $statuses = get_terms([
+                    'taxonomy' => 'pp_breach_status',
+                    'hide_empty' => false,
+                ]);
+                foreach ($statuses as $status) {
+                    printf(
+                        '<option value="%s">%s</option>',
+                        esc_attr($status->slug),
+                        esc_html($status->name)
+                    );
+                }
+                ?>
+            </select>
+
+            <input type="text" id="pp-search-breaches" placeholder="<?php esc_attr_e('Search breaches...', 'piper-privacy'); ?>">
+        </div>
+
+        <!-- Breach List -->
+        <div id="pp-breach-list"></div>
+
+        <!-- Breach Form Modal -->
+        <div id="pp-breach-modal" class="pp-modal">
+            <div class="pp-modal-content">
+                <span class="pp-modal-close">&times;</span>
+                <div id="pp-breach-form"></div>
+            </div>
+        </div>
+
+        <!-- Notification Form Modal -->
+        <div id="pp-notification-modal" class="pp-modal">
+            <div class="pp-modal-content">
+                <span class="pp-modal-close">&times;</span>
+                <div id="pp-notification-form"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script type="text/template" id="pp-breach-list-template">
+    <table class="wp-list-table widefat fixed striped">
+        <thead>
+            <tr>
+                <th><?php esc_html_e('Title', 'piper-privacy'); ?></th>
+                <th><?php esc_html_e('Severity', 'piper-privacy'); ?></th>
+                <th><?php esc_html_e('Status', 'piper-privacy'); ?></th>
+                <th><?php esc_html_e('Detection Date', 'piper-privacy'); ?></th>
+                <th><?php esc_html_e('Actions', 'piper-privacy'); ?></th>
+            </tr>
+        </thead>
+        <tbody>
+            <% _.each(breaches, function(breach) { %>
+                <tr>
+                    <td>
+                        <a href="#" class="pp-view-breach" data-id="<%= breach.id %>">
+                            <%= breach.title %>
+                        </a>
+                    </td>
+                    <td><%= formatSeverity(breach.severity) %></td>
+                    <td><%= formatStatus(breach.status) %></td>
+                    <td><%= formatDate(breach.detection_date) %></td>
+                    <td>
+                        <a href="#" class="pp-edit-breach" data-id="<%= breach.id %>">
+                            <?php esc_html_e('Edit', 'piper-privacy'); ?>
+                        </a> |
+                        <a href="#" class="pp-delete-breach" data-id="<%= breach.id %>">
+                            <?php esc_html_e('Delete', 'piper-privacy'); ?>
+                        </a>
+                    </td>
+                </tr>
+            <% }); %>
+        </tbody>
+    </table>
+</script>
+
+<script type="text/template" id="pp-breach-form-template">
+    <h2><%= breach ? '<?php esc_html_e('Edit Breach', 'piper-privacy'); ?>' : '<?php esc_html_e('Add New Breach', 'piper-privacy'); ?>' %></h2>
+    
+    <form id="pp-breach-form">
+        <input type="hidden" name="breach_id" value="<%= breach ? breach.id : '' %>">
+        
+        <div class="form-field">
+            <label for="title"><?php esc_html_e('Title', 'piper-privacy'); ?></label>
+            <input type="text" name="title" id="title" value="<%= breach ? breach.title : '' %>" required>
+        </div>
+
+        <div class="form-field">
+            <label for="description"><?php esc_html_e('Description', 'piper-privacy'); ?></label>
+            <textarea name="description" id="description" rows="5" required><%= breach ? breach.description : '' %></textarea>
+        </div>
+
+        <div class="form-field">
+            <label for="severity"><?php esc_html_e('Severity', 'piper-privacy'); ?></label>
+            <select name="severity" id="severity" required>
+                <option value=""><?php esc_html_e('Select Severity', 'piper-privacy'); ?></option>
+                <?php foreach ($severities as $severity) : ?>
+                    <option value="<?php echo esc_attr($severity->slug); ?>">
+                        <?php echo esc_html($severity->name); ?>
+                    </option>
+                <?php endforeach; ?>
+            </select>
+        </div>
+
+        <div class="form-field">
+            <label for="status"><?php esc_html_e('Status', 'piper-privacy'); ?></label>
+            <select name="status" id="status" required>
+                <option value=""><?php esc_html_e('Select Status', 'piper-privacy'); ?></option>
+                <?php foreach ($statuses as $status) : ?>
+                    <option value="<?php echo esc_attr($status->slug); ?>">
+                        <?php echo esc_html($status->name); ?>
+                    </option>
+                <?php endforeach; ?>
+            </select>
+        </div>
+
+        <div class="form-field">
+            <label for="detection_date"><?php esc_html_e('Detection Date', 'piper-privacy'); ?></label>
+            <input type="datetime-local" name="detection_date" id="detection_date" 
+                   value="<%= breach ? formatDateInput(breach.detection_date) : '' %>" required>
+        </div>
+
+        <div class="form-field">
+            <label for="affected_data"><?php esc_html_e('Affected Data', 'piper-privacy'); ?></label>
+            <select name="affected_data[]" id="affected_data" multiple required>
+                <option value="personal"><?php esc_html_e('Personal Information', 'piper-privacy'); ?></option>
+                <option value="financial"><?php esc_html_e('Financial Information', 'piper-privacy'); ?></option>
+                <option value="health"><?php esc_html_e('Health Information', 'piper-privacy'); ?></option>
+                <option value="credentials"><?php esc_html_e('Login Credentials', 'piper-privacy'); ?></option>
+                <option value="other"><?php esc_html_e('Other', 'piper-privacy'); ?></option>
+            </select>
+        </div>
+
+        <div class="form-field">
+            <label for="affected_users"><?php esc_html_e('Affected Users', 'piper-privacy'); ?></label>
+            <select name="affected_users[]" id="affected_users" multiple>
+                <?php
+                $users = get_users(['fields' => ['ID', 'display_name', 'user_email']]);
+                foreach ($users as $user) {
+                    printf(
+                        '<option value="%d">%s (%s)</option>',
+                        esc_attr($user->ID),
+                        esc_html($user->display_name),
+                        esc_html($user->user_email)
+                    );
+                }
+                ?>
+            </select>
+        </div>
+
+        <div class="form-field">
+            <label>
+                <input type="checkbox" name="notify_authorities" value="1" 
+                       <%= breach && breach.notify_authorities ? 'checked' : '' %>>
+                <?php esc_html_e('Notify Authorities', 'piper-privacy'); ?>
+            </label>
+        </div>
+
+        <div class="form-field">
+            <label>
+                <input type="checkbox" name="notify_affected" value="1"
+                       <%= breach && breach.notify_affected ? 'checked' : '' %>>
+                <?php esc_html_e('Notify Affected Users', 'piper-privacy'); ?>
+            </label>
+        </div>
+
+        <div class="form-field">
+            <label for="mitigation_steps"><?php esc_html_e('Mitigation Steps', 'piper-privacy'); ?></label>
+            <textarea name="mitigation_steps" id="mitigation_steps" rows="5"><%= breach ? breach.mitigation_steps : '' %></textarea>
+        </div>
+
+        <div class="submit">
+            <button type="submit" class="button button-primary">
+                <%= breach ? '<?php esc_html_e('Update', 'piper-privacy'); ?>' : '<?php esc_html_e('Create', 'piper-privacy'); ?>' %>
+            </button>
+            <button type="button" class="button pp-modal-close">
+                <?php esc_html_e('Cancel', 'piper-privacy'); ?>
+            </button>
+        </div>
+    </form>
+</script>
+
+<script type="text/template" id="pp-notification-form-template">
+    <h2><?php esc_html_e('Send Notification', 'piper-privacy'); ?></h2>
+    
+    <form id="pp-notification-form">
+        <input type="hidden" name="breach_id" value="<%= breach.id %>">
+        
+        <div class="form-field">
+            <label for="notification_type"><?php esc_html_e('Notification Type', 'piper-privacy'); ?></label>
+            <select name="type" id="notification_type" required>
+                <option value=""><?php esc_html_e('Select Type', 'piper-privacy'); ?></option>
+                <option value="authority"><?php esc_html_e('Authority', 'piper-privacy'); ?></option>
+                <option value="affected_users"><?php esc_html_e('Affected Users', 'piper-privacy'); ?></option>
+                <option value="internal"><?php esc_html_e('Internal', 'piper-privacy'); ?></option>
+            </select>
+        </div>
+
+        <div class="form-field">
+            <label for="notification_template"><?php esc_html_e('Template', 'piper-privacy'); ?></label>
+            <select name="template" id="notification_template" required>
+                <option value=""><?php esc_html_e('Select Template', 'piper-privacy'); ?></option>
+                <% _.each(templates, function(template) { %>
+                    <option value="<%= template.id %>"><%= template.name %></option>
+                <% }); %>
+            </select>
+        </div>
+
+        <div class="form-field">
+            <label for="recipients"><?php esc_html_e('Recipients', 'piper-privacy'); ?></label>
+            <select name="recipients[]" id="recipients" multiple required>
+                <% if (type === 'authority') { %>
+                    <option value="<%= settings.authority_email %>">
+                        <?php esc_html_e('Data Protection Authority', 'piper-privacy'); ?>
+                    </option>
+                <% } else if (type === 'affected_users') { %>
+                    <% _.each(breach.affected_users, function(user) { %>
+                        <option value="<%= user.id %>"><%= user.name %> (<%= user.email %>)</option>
+                    <% }); %>
+                <% } else { %>
+                    <?php
+                    $users = get_users(['role__in' => ['administrator', 'editor']]);
+                    foreach ($users as $user) {
+                        printf(
+                            '<option value="%s">%s (%s)</option>',
+                            esc_attr($user->user_email),
+                            esc_html($user->display_name),
+                            esc_html($user->user_email)
+                        );
+                    }
+                    ?>
+                <% } %>
+            </select>
+        </div>
+
+        <div class="form-field">
+            <label for="schedule_date"><?php esc_html_e('Schedule Date', 'piper-privacy'); ?></label>
+            <input type="datetime-local" name="schedule_date" id="schedule_date" 
+                   value="<%= formatDateInput(new Date()) %>" required>
+        </div>
+
+        <div class="submit">
+            <button type="submit" class="button button-primary">
+                <?php esc_html_e('Schedule Notification', 'piper-privacy'); ?>
+            </button>
+            <button type="button" class="button pp-modal-close">
+                <?php esc_html_e('Cancel', 'piper-privacy'); ?>
+            </button>
+        </div>
+    </form>
+</script>

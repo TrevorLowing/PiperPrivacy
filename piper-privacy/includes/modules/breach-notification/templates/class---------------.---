@@ -1,0 +1,32 @@
+<?php
+/**
+ * Breach timeline template
+ *
+ * @package     PiperPrivacy
+ * @subpackage  Modules\BreachNotification
+ */
+
+// If this file is called directly, abort.
+if (!defined('WPINC')) {
+    die;
+}
+?>
+
+<div class="pp-timeline">
+    <?php if (empty($timeline)) : ?>
+        <p class="pp-no-timeline">
+            <?php esc_html_e('No timeline entries found.', 'piper-privacy'); ?>
+        </p>
+    <?php else : ?>
+        <?php foreach ($timeline as $entry) : ?>
+            <div class="pp-timeline-entry">
+                <div class="pp-timeline-icon pp-icon-<?php echo esc_attr($entry['type']); ?>"></div>
+                <div class="pp-timeline-content">
+                    <p class="pp-timeline-text">
+                        <?php echo $this->format_timeline_entry($entry); ?>
+                    </p>
+                </div>
+            </div>
+        <?php endforeach; ?>
+    <?php endif; ?>
+</div>

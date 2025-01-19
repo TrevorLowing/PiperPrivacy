@@ -1,0 +1,92 @@
+<?php
+namespace PiperPrivacy\Modules\CollectionManager\PostTypes;
+
+/**
+ * Privacy Collection Post Type
+ */
+class PrivacyCollection {
+    /**
+     * Post type name
+     */
+    const POST_TYPE = 'privacy-collection';
+
+    /**
+     * Register the post type
+     */
+    public function register() {
+        register_post_type(self::POST_TYPE, [
+            'labels' => [
+                'name'               => __('Privacy Collections', 'piper-privacy'),
+                'singular_name'      => __('Privacy Collection', 'piper-privacy'),
+                'add_new'           => __('Add New Collection', 'piper-privacy'),
+                'add_new_item'      => __('Add New Privacy Collection', 'piper-privacy'),
+                'edit_item'         => __('Edit Privacy Collection', 'piper-privacy'),
+                'view_item'         => __('View Privacy Collection', 'piper-privacy'),
+                'search_items'      => __('Search Privacy Collections', 'piper-privacy'),
+                'not_found'         => __('No privacy collections found', 'piper-privacy'),
+                'not_found_in_trash'=> __('No privacy collections found in trash', 'piper-privacy'),
+            ],
+            'public'              => false,
+            'show_ui'             => true,
+            'show_in_menu'        => 'privacy-collections',
+            'supports'            => ['title', 'editor', 'revisions'],
+            'has_archive'         => false,
+            'rewrite'             => false,
+            'capability_type'     => 'post',
+            'map_meta_cap'        => true,
+            'menu_icon'           => 'dashicons-shield',
+            'hierarchical'        => false,
+            'show_in_rest'        => true
+        ]);
+
+        $this->register_meta_fields();
+    }
+
+    /**
+     * Register meta fields for the post type
+     */
+    private function register_meta_fields() {
+        // Basic Collection Information
+        register_post_meta(self::POST_TYPE, 'purpose_statement', [
+            'type'          => 'string',
+            'description'   => 'Purpose of the privacy collection',
+            'single'        => true,
+            'show_in_rest'  => true,
+        ]);
+
+        register_post_meta(self::POST_TYPE, 'legal_authority', [
+            'type'          => 'string',
+            'description'   => 'Legal authority for collection',
+            'single'        => true,
+            'show_in_rest'  => true,
+        ]);
+
+        register_post_meta(self::POST_TYPE, 'collection_status', [
+            'type'          => 'string',
+            'description'   => 'Current status of the collection',
+            'single'        => true,
+            'show_in_rest'  => true,
+            'default'       => 'draft',
+        ]);
+
+        // System Information
+        register_post_meta(self::POST_TYPE, 'system_name', [
+            'type'          => 'string',
+            'description'   => 'Name of the system collecting data',
+            'single'        => true,
+            'show_in_rest'  => true,
+        ]);
+
+        register_post_meta(self::POST_TYPE, 'data_elements', [
+            'type'          => 'array',
+            'description'   => 'Data elements being collected',
+            'single'        => true,
+            'show_in_rest'  => [
+                'schema' => [
+                    'type'  => 'array',
+                    'items' => ['type' => 'string'],
+                ],
+            ],
+        ]);
+    }
+}

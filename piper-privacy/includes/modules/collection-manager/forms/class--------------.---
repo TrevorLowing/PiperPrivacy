@@ -1,0 +1,197 @@
+<?php
+namespace PiperPrivacy\Modules\CollectionManager\Forms;
+
+/**
+ * Privacy Collection Form Handler
+ */
+class CollectionForm extends BaseForm {
+    /**
+     * Get the form ID
+     */
+    protected function get_form_id() {
+        return 'privacy_collection_form';
+    }
+
+    /**
+     * Get form configuration
+     */
+    protected function get_config() {
+        return [
+            'title' => __('Privacy Collection Information', 'piper-privacy'),
+            'fields' => [
+                'purpose_statement' => [
+                    'type' => 'textarea',
+                    'label' => __('Purpose Statement', 'piper-privacy'),
+                    'required' => true,
+                ],
+                'legal_authority' => [
+                    'type' => 'textarea',
+                    'label' => __('Legal Authority', 'piper-privacy'),
+                    'required' => true,
+                ],
+                'collection_method' => [
+                    'type' => 'select',
+                    'label' => __('Collection Method', 'piper-privacy'),
+                    'required' => true,
+                    'options' => [
+                        'direct' => __('Direct from Individual', 'piper-privacy'),
+                        'indirect' => __('Indirect Collection', 'piper-privacy'),
+                        'automated' => __('Automated Collection', 'piper-privacy'),
+                    ],
+                ],
+                'system_name' => [
+                    'type' => 'text',
+                    'label' => __('System Name', 'piper-privacy'),
+                    'required' => true,
+                ],
+                'data_elements' => [
+                    'type' => 'repeater',
+                    'label' => __('Data Elements', 'piper-privacy'),
+                    'required' => true,
+                    'sub_fields' => [
+                        'element_name' => [
+                            'type' => 'text',
+                            'label' => __('Element Name', 'piper-privacy'),
+                            'required' => true,
+                        ],
+                        'category' => [
+                            'type' => 'select',
+                            'label' => __('Category', 'piper-privacy'),
+                            'required' => true,
+                            'options' => [
+                                'personal' => __('Personal Information', 'piper-privacy'),
+                                'sensitive' => __('Sensitive Information', 'piper-privacy'),
+                                'financial' => __('Financial Information', 'piper-privacy'),
+                            ],
+                        ],
+                        'description' => [
+                            'type' => 'textarea',
+                            'label' => __('Description', 'piper-privacy'),
+                            'required' => false,
+                        ],
+                    ],
+                ],
+                'stakeholders' => [
+                    'type' => 'repeater',
+                    'label' => __('Stakeholders', 'piper-privacy'),
+                    'description' => __('Add stakeholders who should be notified of changes to this privacy collection.', 'piper-privacy'),
+                    'required' => false,
+                    'sub_fields' => [
+                        'name' => [
+                            'type' => 'text',
+                            'label' => __('Name', 'piper-privacy'),
+                            'required' => true,
+                        ],
+                        'role' => [
+                            'type' => 'text',
+                            'label' => __('Role', 'piper-privacy'),
+                            'required' => true,
+                        ],
+                        'department' => [
+                            'type' => 'text',
+                            'label' => __('Department', 'piper-privacy'),
+                            'required' => false,
+                        ],
+                        'email' => [
+                            'type' => 'email',
+                            'label' => __('Email', 'piper-privacy'),
+                            'required' => true,
+                        ],
+                        'notifications' => [
+                            'type' => 'checkbox',
+                            'label' => __('Notifications', 'piper-privacy'),
+                            'options' => [
+                                'status_change' => __('Status Changes', 'piper-privacy'),
+                                'comments' => __('New Comments', 'piper-privacy'),
+                                'documents' => __('Document Updates', 'piper-privacy'),
+                            ],
+                            'default' => ['status_change'],
+                        ],
+                    ],
+                ],
+            ],
+        ];
+    }
+
+    /**
+     * Process form submission
+     */
+    protected function process_submission($entry_id, $form_data) {
+        // Validate form data
+        $validation = $this->validate_form_data($form_data);
+        if (is_wp_error($validation)) {
+            $this->handle_error($validation);
+            return;
+        }
+
+        // Sanitize form data
+        $sanitized_data = $this->sanitize_form_data($form_data);
+
+        // Create post
+        $post_data = [
+            'title' => $sanitized_data['system_name'],
+            'content' => $sanitized_data['purpose_statement'],
+        ];
+
+        $post_id = $this->save_post('privacy-collection', $post_data);
+        if (is_wp_error($post_id)) {
+            $this->handle_error($post_id);
+            return;
+        }
+
+        // Save meta data
+        $meta_data = [
+            'purpose_statement' => $sanitized_data['purpose_statement'],
+            'legal_authority' => $sanitized_data['legal_authority'],
+            'system_name' => $sanitized_data['system_name'],
+            'data_elements' => $sanitized_data['data_elements'],
+            'collection_status' => 'draft',
+        ];
+
+        $this->save_meta_data($post_id, $meta_data);
+
+        // Trigger actions
+        do_action('piper_privacy_collection_created', $post_id, $sanitized_data);
+    }
+
+    /**
+     * Validate form data
+     */
+    protected function validate_form_data($data) {
+        $required_fields = ['purpose_statement', 'legal_authority', 'system_name', 'data_elements'];
+        
+        foreach ($required_fields as $field) {
+            if (empty($data[$field])) {
+                return new \WP_Error(
+                    'missing_required_field',
+                    sprintf(__('Field %s is required', 'piper-privacy'), $field)
+                );
+            }
+        }
+
+        return true;
+    }
+
+    /**
+     * Get form settings
+     */
+    protected function get_form_settings() {
+        return [
+            'privacy_collection' => [
+                'title' => __('Privacy Collection Settings', 'piper-privacy'),
+                'fields' => [
+                    'workflow_enabled' => [
+                        'type' => 'switch',
+                        'label' => __('Enable Workflow', 'piper-privacy'),
+                        'value' => 'yes',
+                    ],
+                    'notification_emails' => [
+                        'type' => 'textarea',
+                        'label' => __('Notification Emails', 'piper-privacy'),
+                        'help' => __('Enter email addresses, one per line', 'piper-privacy'),
+                    ],
+                ],
+            ],
+        ];
+    }
+}

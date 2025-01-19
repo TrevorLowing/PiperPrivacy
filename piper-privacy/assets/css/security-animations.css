@@ -1,0 +1,205 @@
+// Security Animation Effects
+@layer security-animations {
+    // Encryption Process
+    @keyframes encrypt-document {
+        0% {
+            background-position: 0 0;
+            clip-path: inset(0 0 0 0);
+        }
+        50% {
+            background-position: 200% 0;
+            clip-path: inset(0 80% 0 0);
+        }
+        100% {
+            background-position: 400% 0;
+            clip-path: inset(0 0 0 0);
+        }
+    }
+
+    // Verification Check
+    @keyframes verify-check {
+        0% {
+            transform: scale(0);
+            opacity: 0;
+        }
+        50% {
+            transform: scale(1.2);
+            opacity: 0.7;
+        }
+        100% {
+            transform: scale(1);
+            opacity: 1;
+        }
+    }
+
+    // Nonce Validation
+    @keyframes nonce-validate {
+        0% {
+            border-color: var(--color-border);
+            box-shadow: none;
+        }
+        50% {
+            border-color: var(--color-primary);
+            box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.2);
+        }
+        100% {
+            border-color: var(--color-success);
+            box-shadow: none;
+        }
+    }
+
+    // Secure Save
+    @keyframes secure-save {
+        0% {
+            transform: translateY(0);
+            opacity: 1;
+        }
+        20% {
+            transform: translateY(-10px);
+            opacity: 0.8;
+        }
+        40% {
+            transform: translateY(0);
+            opacity: 0.6;
+        }
+        100% {
+            transform: translateY(0);
+            opacity: 1;
+        }
+    }
+
+    // Security State Classes
+    .encrypting {
+        position: relative;
+        background: linear-gradient(
+            90deg,
+            transparent,
+            rgba(59, 130, 246, 0.1),
+            transparent
+        );
+        background-size: 400% 100%;
+        animation: encrypt-document 2s linear infinite;
+    }
+
+    .verified {
+        position: relative;
+    }
+
+    .verified::after {
+        content: '✓';
+        position: absolute;
+        right: -1.5rem;
+        color: var(--color-success);
+        animation: verify-check 0.3s var(--ease-bounce);
+    }
+
+    .nonce-validating {
+        border: 2px solid;
+        animation: nonce-validate 1s var(--ease-out);
+    }
+
+    .secure-saving {
+        animation: secure-save 0.8s var(--ease-out);
+    }
+
+    // Security Indicators
+    .security-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        padding: 0.25rem 0.75rem;
+        border-radius: 9999px;
+        font-size: 0.875rem;
+        background: rgba(var(--security-color-rgb), 0.1);
+        color: var(--security-color);
+    }
+
+    .security-badge--encrypted {
+        --security-color: rgb(59, 130, 246);
+        --security-color-rgb: 59, 130, 246;
+    }
+
+    .security-badge--verified {
+        --security-color: rgb(34, 197, 94);
+        --security-color-rgb: 34, 197, 94;
+    }
+
+    .security-badge--pending {
+        --security-color: rgb(234, 179, 8);
+        --security-color-rgb: 234, 179, 8;
+    }
+
+    // Protection States
+    .protection-active {
+        position: relative;
+        overflow: hidden;
+    }
+
+    .protection-active::before {
+        content: '';
+        position: absolute;
+        inset: 0;
+        background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z' fill='none' stroke='currentColor' stroke-width='2'/%3E%3C/svg%3E");
+        background-size: 16px;
+        opacity: 0.1;
+    }
+
+    // Secure Transfer
+    @keyframes secure-transfer {
+        0% {
+            transform: translateX(0);
+            opacity: 1;
+        }
+        20% {
+            transform: translateX(20px);
+            opacity: 0;
+        }
+        40% {
+            transform: translateX(-20px);
+            opacity: 0;
+        }
+        60% {
+            transform: translateX(0);
+            opacity: 1;
+        }
+        80% {
+            transform: scale(1.05);
+        }
+        100% {
+            transform: scale(1);
+        }
+    }
+
+    .secure-transferring {
+        animation: secure-transfer 1s var(--ease-bounce);
+    }
+
+    // Encryption Progress
+    .encryption-progress {
+        position: relative;
+        height: 2px;
+        background: #e5e7eb;
+        overflow: hidden;
+    }
+
+    .encryption-progress::after {
+        content: '';
+        position: absolute;
+        inset: 0;
+        background: var(--color-primary);
+        transform-origin: left;
+        animation: encryption-fill 1.5s var(--ease-out) infinite;
+    }
+
+    @keyframes encryption-fill {
+        0% {
+            transform: translateX(-100%);
+        }
+        50% {
+            transform: translateX(0);
+        }
+        100% {
+            transform: translateX(100%);
+        }
+    }
+}

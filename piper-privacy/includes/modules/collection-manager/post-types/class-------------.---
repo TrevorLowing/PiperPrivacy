@@ -1,0 +1,171 @@
+<?php
+namespace PiperPrivacy\Modules\CollectionManager\PostTypes;
+
+/**
+ * Privacy Impact Assessment Post Type
+ */
+class PrivacyImpact {
+    /**
+     * Post type name
+     */
+    const POST_TYPE = 'privacy-impact';
+
+    /**
+     * Register the post type
+     */
+    public function register() {
+        register_post_type(self::POST_TYPE, [
+            'labels' => [
+                'name'               => __('Privacy Impact Assessments', 'piper-privacy'),
+                'singular_name'      => __('Privacy Impact Assessment', 'piper-privacy'),
+                'add_new'           => __('Add New PIA', 'piper-privacy'),
+                'add_new_item'      => __('Add New Privacy Impact Assessment', 'piper-privacy'),
+                'edit_item'         => __('Edit Privacy Impact Assessment', 'piper-privacy'),
+                'view_item'         => __('View Privacy Impact Assessment', 'piper-privacy'),
+                'search_items'      => __('Search PIAs', 'piper-privacy'),
+                'not_found'         => __('No PIAs found', 'piper-privacy'),
+                'not_found_in_trash'=> __('No PIAs found in trash', 'piper-privacy'),
+            ],
+            'public'              => false,
+            'show_ui'             => true,
+            'show_in_menu'        => 'privacy-collections',
+            'supports'            => ['title', 'editor', 'revisions'],
+            'has_archive'         => false,
+            'rewrite'             => false,
+            'capability_type'     => 'post',
+            'map_meta_cap'        => true,
+            'hierarchical'        => false,
+            'show_in_rest'        => true
+        ]);
+
+        $this->register_meta_fields();
+    }
+
+    /**
+     * Register meta fields for the post type
+     */
+    private function register_meta_fields() {
+        // Basic Information
+        register_post_meta(self::POST_TYPE, 'collection_reference', [
+            'type'          => 'integer',
+            'description'   => 'Associated Privacy Collection ID',
+            'single'        => true,
+            'show_in_rest'  => true,
+        ]);
+
+        register_post_meta(self::POST_TYPE, 'pta_reference', [
+            'type'          => 'integer',
+            'description'   => 'Associated Privacy Threshold Analysis ID',
+            'single'        => true,
+            'show_in_rest'  => true,
+        ]);
+
+        register_post_meta(self::POST_TYPE, 'pia_status', [
+            'type'          => 'string',
+            'description'   => 'Current status of the PIA',
+            'single'        => true,
+            'show_in_rest'  => true,
+            'default'       => 'draft',
+        ]);
+
+        // System Analysis
+        register_post_meta(self::POST_TYPE, 'system_description', [
+            'type'          => 'string',
+            'description'   => 'Detailed system description',
+            'single'        => true,
+            'show_in_rest'  => true,
+        ]);
+
+        register_post_meta(self::POST_TYPE, 'data_flows', [
+            'type'          => 'array',
+            'description'   => 'Data flow documentation',
+            'single'        => true,
+            'show_in_rest'  => [
+                'schema' => [
+                    'type'  => 'array',
+                    'items' => ['type' => 'object'],
+                ],
+            ],
+        ]);
+
+        // Privacy Analysis
+        register_post_meta(self::POST_TYPE, 'privacy_risks', [
+            'type'          => 'array',
+            'description'   => 'Identified privacy risks',
+            'single'        => true,
+            'show_in_rest'  => [
+                'schema' => [
+                    'type'  => 'array',
+                    'items' => ['type' => 'object'],
+                ],
+            ],
+        ]);
+
+        register_post_meta(self::POST_TYPE, 'mitigation_measures', [
+            'type'          => 'array',
+            'description'   => 'Privacy risk mitigation measures',
+            'single'        => true,
+            'show_in_rest'  => [
+                'schema' => [
+                    'type'  => 'array',
+                    'items' => ['type' => 'object'],
+                ],
+            ],
+        ]);
+
+        // Access Controls
+        register_post_meta(self::POST_TYPE, 'access_controls', [
+            'type'          => 'array',
+            'description'   => 'System access controls',
+            'single'        => true,
+            'show_in_rest'  => [
+                'schema' => [
+                    'type'  => 'array',
+                    'items' => ['type' => 'object'],
+                ],
+            ],
+        ]);
+
+        // Data Management
+        register_post_meta(self::POST_TYPE, 'data_retention', [
+            'type'          => 'object',
+            'description'   => 'Data retention policies',
+            'single'        => true,
+            'show_in_rest'  => true,
+        ]);
+
+        register_post_meta(self::POST_TYPE, 'data_disposal', [
+            'type'          => 'object',
+            'description'   => 'Data disposal procedures',
+            'single'        => true,
+            'show_in_rest'  => true,
+        ]);
+
+        // Review and Approval
+        register_post_meta(self::POST_TYPE, 'reviewers', [
+            'type'          => 'array',
+            'description'   => 'List of reviewers',
+            'single'        => true,
+            'show_in_rest'  => [
+                'schema' => [
+                    'type'  => 'array',
+                    'items' => ['type' => 'integer'],
+                ],
+            ],
+        ]);
+
+        register_post_meta(self::POST_TYPE, 'approval_status', [
+            'type'          => 'object',
+            'description'   => 'Approval status and history',
+            'single'        => true,
+            'show_in_rest'  => true,
+        ]);
+
+        register_post_meta(self::POST_TYPE, 'next_review_date', [
+            'type'          => 'string',
+            'description'   => 'Date of next scheduled review',
+            'single'        => true,
+            'show_in_rest'  => true,
+        ]);
+    }
+}

@@ -1,0 +1,190 @@
+// Error and Validation Animation Presets
+@layer error-animations {
+    // Error Shake Animation
+    @keyframes error-shake {
+        0%, 100% { transform: translateX(0); }
+        10%, 30%, 50%, 70%, 90% { transform: translateX(-2px); }
+        20%, 40%, 60%, 80% { transform: translateX(2px); }
+    }
+
+    // Validation Feedback
+    @keyframes validation-pulse {
+        0% { 
+            box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.4);
+            border-color: rgb(239, 68, 68);
+        }
+        70% {
+            box-shadow: 0 0 0 10px rgba(239, 68, 68, 0);
+            border-color: rgb(239, 68, 68);
+        }
+        100% {
+            box-shadow: 0 0 0 0 rgba(239, 68, 68, 0);
+            border-color: var(--border-color, #e5e7eb);
+        }
+    }
+
+    // Error Message Slide
+    @keyframes error-slide {
+        0% {
+            opacity: 0;
+            transform: translateY(-10px);
+        }
+        100% {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    // Field Highlight
+    @keyframes field-highlight {
+        0% { background-color: transparent; }
+        50% { background-color: rgba(239, 68, 68, 0.1); }
+        100% { background-color: transparent; }
+    }
+
+    // Apply to Elements
+    .error-state {
+        animation: error-shake 0.5s cubic-bezier(.36,.07,.19,.97) both;
+    }
+
+    .invalid-field {
+        animation: validation-pulse 0.5s ease-out;
+    }
+
+    .error-message {
+        animation: error-slide 0.3s ease-out;
+    }
+
+    .field-error {
+        animation: field-highlight 1s ease-in-out;
+    }
+
+    // Stage-specific Error States
+    .pta-error {
+        animation: 
+            error-shake 0.5s cubic-bezier(.36,.07,.19,.97),
+            field-highlight 1s ease-in-out;
+    }
+
+    .pia-error {
+        animation:
+            validation-pulse 0.5s ease-out,
+            field-highlight 1s ease-in-out;
+    }
+
+    .implementation-error {
+        animation:
+            error-shake 0.5s cubic-bezier(.36,.07,.19,.97),
+            validation-pulse 0.5s ease-out;
+    }
+
+    // Form Validation States
+    .form-field {
+        transition: border-color 0.2s ease;
+    }
+
+    .form-field-error {
+        border-color: rgb(239, 68, 68);
+        animation: validation-pulse 0.5s ease-out;
+    }
+
+    .error-tooltip {
+        animation: error-slide 0.3s ease-out;
+        background-color: rgb(239, 68, 68);
+        color: white;
+        padding: 0.5rem;
+        border-radius: 0.25rem;
+        font-size: 0.875rem;
+        margin-top: 0.25rem;
+        position: absolute;
+        z-index: 10;
+    }
+
+    .error-tooltip::before {
+        content: '';
+        position: absolute;
+        top: -0.25rem;
+        left: 1rem;
+        border-width: 0 0.25rem 0.25rem;
+        border-style: solid;
+        border-color: transparent transparent rgb(239, 68, 68);
+    }
+
+    // Error Icon Animations
+    @keyframes error-icon-pulse {
+        0% { transform: scale(1); }
+        50% { transform: scale(1.2); }
+        100% { transform: scale(1); }
+    }
+
+    .error-icon {
+        animation: error-icon-pulse 0.5s ease-in-out;
+        color: rgb(239, 68, 68);
+    }
+
+    // Error Banner
+    @keyframes error-banner-slide {
+        0% {
+            transform: translateY(-100%);
+            opacity: 0;
+        }
+        100% {
+            transform: translateY(0);
+            opacity: 1;
+        }
+    }
+
+    .error-banner {
+        animation: error-banner-slide 0.3s ease-out;
+        background-color: rgb(254, 242, 242);
+        border: 1px solid rgb(239, 68, 68);
+        border-radius: 0.375rem;
+        padding: 1rem;
+        margin-bottom: 1rem;
+    }
+
+    // Block-level Error Indicators
+    .error-block {
+        position: relative;
+        padding-left: 1.5rem;
+        margin-top: 0.5rem;
+        color: rgb(239, 68, 68);
+    }
+
+    .error-block::before {
+        content: '!';
+        position: absolute;
+        left: 0.5rem;
+        top: 50%;
+        transform: translateY(-50%);
+        font-weight: bold;
+    }
+
+    // Stage Transition Error States
+    .stage-transition-error {
+        animation:
+            error-shake 0.5s cubic-bezier(.36,.07,.19,.97),
+            field-highlight 1s ease-in-out;
+        border-color: rgb(239, 68, 68);
+    }
+
+    // Validation Success States
+    @keyframes success-checkmark {
+        0% {
+            transform: scale(0);
+            opacity: 0;
+        }
+        50% {
+            transform: scale(1.2);
+        }
+        100% {
+            transform: scale(1);
+            opacity: 1;
+        }
+    }
+
+    .validation-success {
+        animation: success-checkmark 0.5s ease-out forwards;
+        color: rgb(34, 197, 94);
+    }
+}

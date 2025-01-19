@@ -1,0 +1,32 @@
+<?php
+/**
+ * Admin page template for Impact Assessment
+ *
+ * @package     PiperPrivacy
+ * @subpackage  Modules\ImpactAssessment
+ */
+
+// If this file is called directly, abort.
+if (!defined('WPINC')) {
+    die;
+}
+?>
+
+<div class="wrap">
+    <h1 class="wp-heading-inline"><?php esc_html_e('Impact Assessments', 'piper-privacy'); ?></h1>
+    <a href="#" class="page-title-action" id="pp-new-assessment"><?php esc_html_e('Add New', 'piper-privacy'); ?></a>
+    <hr class="wp-header-end">
+
+    <div class="pp-assessment-container">
+        <!-- Assessment List -->
+        <div id="pp-assessment-list"></div>
+
+        <!-- Assessment Form -->
+        <div id="pp-assessment-form" style="display: none;">
+            <?php $this->render_assessment_form(); ?>
+        </div>
+
+        <!-- Single Assessment View -->
+        <div id="pp-assessment-single" style="display: none;"></div>
+    </div>
+</div>

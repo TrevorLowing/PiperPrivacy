@@ -1,0 +1,66 @@
+<?php
+/**
+ * Assessment list template
+ *
+ * @package     PiperPrivacy
+ * @subpackage  Modules\ImpactAssessment
+ */
+
+// If this file is called directly, abort.
+if (!defined('WPINC')) {
+    die;
+}
+
+if (empty($assessments)) {
+    ?>
+    <div class="pp-no-items">
+        <p><?php esc_html_e('No impact assessments found.', 'piper-privacy'); ?></p>
+    </div>
+    <?php
+    return;
+}
+?>
+
+<table class="wp-list-table widefat fixed striped">
+    <thead>
+        <tr>
+            <th><?php esc_html_e('Title', 'piper-privacy'); ?></th>
+            <th><?php esc_html_e('Status', 'piper-privacy'); ?></th>
+            <th><?php esc_html_e('Author', 'piper-privacy'); ?></th>
+            <th><?php esc_html_e('Review Date', 'piper-privacy'); ?></th>
+            <th><?php esc_html_e('Actions', 'piper-privacy'); ?></th>
+        </tr>
+    </thead>
+    <tbody>
+        <?php foreach ($assessments as $assessment) : ?>
+            <tr>
+                <td>
+                    <a href="#" class="row-title pp-view-assessment" data-id="<?php echo esc_attr($assessment['id']); ?>">
+                        <?php echo esc_html($assessment['title']); ?>
+                    </a>
+                </td>
+                <td>
+                    <span class="pp-status pp-status-<?php echo esc_attr($assessment['status']); ?>">
+                        <?php echo esc_html(ucfirst($assessment['status'])); ?>
+                    </span>
+                </td>
+                <td><?php echo esc_html($assessment['author']); ?></td>
+                <td><?php echo esc_html($assessment['review_date']); ?></td>
+                <td>
+                    <div class="row-actions">
+                        <span class="edit">
+                            <a href="#" class="pp-edit-assessment" data-id="<?php echo esc_attr($assessment['id']); ?>">
+                                <?php esc_html_e('Edit', 'piper-privacy'); ?>
+                            </a> |
+                        </span>
+                        <span class="delete">
+                            <a href="#" class="pp-delete-assessment" data-id="<?php echo esc_attr($assessment['id']); ?>">
+                                <?php esc_html_e('Delete', 'piper-privacy'); ?>
+                            </a>
+                        </span>
+                    </div>
+                </td>
+            </tr>
+        <?php endforeach; ?>
+    </tbody>
+</table>

@@ -1,0 +1,72 @@
+<?php
+/**
+ * Consent history template
+ *
+ * @package     PiperPrivacy
+ * @subpackage  Modules\ConsentManager
+ */
+
+// If this file is called directly, abort.
+if (!defined('WPINC')) {
+    die;
+}
+
+if (empty($revisions)) {
+    ?>
+    <div class="pp-no-items">
+        <p><?php esc_html_e('No revision history available.', 'piper-privacy'); ?></p>
+    </div>
+    <?php
+    return;
+}
+
+// Sort revisions by timestamp in descending order
+usort($revisions, function($a, $b) {
+    return strtotime($b['timestamp']) - strtotime($a['timestamp']);
+});
+?>
+
+<div class="pp-revision-timeline">
+    <?php foreach ($revisions as $revision) :
+        $user = get_userdata($revision['user_id']);
+        $changes = $revision['changes'];
+        ?>
+        <div class="pp-revision-item">
+            <div class="pp-revision-meta">
+                <span class="pp-revision-date">
+                    <?php echo esc_html(get_date_from_gmt($revision['timestamp'])); ?>
+                </span>
+                <?php if ($user) : ?>
+                    <span class="pp-revision-user">
+                        <?php
+                        /* translators: %s: user display name */
+                        printf(esc_html__('by %s', 'piper-privacy'), esc_html($user->display_name));
+                        ?>
+                    </span>
+                <?php endif; ?>
+            </div>
+
+            <div class="pp-revision-changes">
+                <ul>
+                    <?php foreach ($changes as $field => $value) :
+                        // Skip internal fields
+                        if ('_' === substr($field, 0, 1)) {
+                            continue;
+                        }
+                        ?>
+                        <li>
+                            <strong><?php echo esc_html(ucfirst(str_replace('_', ' ', $field))); ?>:</strong>
+                            <?php
+                            if (is_array($value)) {
+                                echo esc_html(json_encode($value));
+                            } else {
+                                echo esc_html($value);
+                            }
+                            ?>
+                        </li>
+                    <?php endforeach; ?>
+                </ul>
+            </div>
+        </div>
+    <?php endforeach; ?>
+</div>

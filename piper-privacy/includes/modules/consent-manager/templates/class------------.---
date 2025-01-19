@@ -1,0 +1,100 @@
+<?php
+/**
+ * Consent list template
+ *
+ * @package     PiperPrivacy
+ * @subpackage  Modules\ConsentManager
+ */
+
+// If this file is called directly, abort.
+if (!defined('WPINC')) {
+    die;
+}
+
+if (empty($consents)) {
+    ?>
+    <div class="pp-no-items">
+        <p><?php esc_html_e('No consent records found.', 'piper-privacy'); ?></p>
+    </div>
+    <?php
+    return;
+}
+?>
+
+<table class="wp-list-table widefat fixed striped">
+    <thead>
+        <tr>
+            <th><?php esc_html_e('User', 'piper-privacy'); ?></th>
+            <th><?php esc_html_e('Type', 'piper-privacy'); ?></th>
+            <th><?php esc_html_e('Status', 'piper-privacy'); ?></th>
+            <th><?php esc_html_e('Date', 'piper-privacy'); ?></th>
+            <th><?php esc_html_e('Expiry', 'piper-privacy'); ?></th>
+            <th><?php esc_html_e('Actions', 'piper-privacy'); ?></th>
+        </tr>
+    </thead>
+    <tbody>
+        <?php foreach ($consents as $consent) : 
+            $user = get_userdata($consent['user_id']);
+            if (!$user) {
+                continue;
+            }
+            ?>
+            <tr>
+                <td>
+                    <?php echo esc_html($user->display_name); ?>
+                    <br>
+                    <small><?php echo esc_html($user->user_email); ?></small>
+                </td>
+                <td>
+                    <?php echo esc_html(ucfirst($consent['consent_type'])); ?>
+                </td>
+                <td>
+                    <span class="pp-status pp-status-<?php echo esc_attr($consent['status']); ?>">
+                        <?php echo esc_html(ucfirst($consent['status'])); ?>
+                    </span>
+                </td>
+                <td>
+                    <?php echo esc_html(get_date_from_gmt($consent['created_at'])); ?>
+                </td>
+                <td>
+                    <?php
+                    if (!empty($consent['expiry_date'])) {
+                        echo esc_html(get_date_from_gmt($consent['expiry_date']));
+                    } else {
+                        esc_html_e('No expiry', 'piper-privacy');
+                    }
+                    ?>
+                </td>
+                <td>
+                    <div class="row-actions">
+                        <span class="view">
+                            <a href="#" class="pp-view-consent" data-id="<?php echo esc_attr($consent['id']); ?>">
+                                <?php esc_html_e('View', 'piper-privacy'); ?>
+                            </a> |
+                        </span>
+                        <?php if ('withdrawn' !== $consent['status']) : ?>
+                            <span class="withdraw">
+                                <a href="#" class="pp-withdraw-consent" data-id="<?php echo esc_attr($consent['id']); ?>">
+                                    <?php esc_html_e('Withdraw', 'piper-privacy'); ?>
+                                </a> |
+                            </span>
+                        <?php endif; ?>
+                        <span class="delete">
+                            <a href="#" class="pp-delete-consent" data-id="<?php echo esc_attr($consent['id']); ?>">
+                                <?php esc_html_e('Delete', 'piper-privacy'); ?>
+                            </a>
+                        </span>
+                    </div>
+                </td>
+            </tr>
+        <?php endforeach; ?>
+    </tbody>
+</table>
+
+<div class="tablenav bottom">
+    <div class="tablenav-pages">
+        <?php
+        // Add pagination if needed
+        ?>
+    </div>
+</div>

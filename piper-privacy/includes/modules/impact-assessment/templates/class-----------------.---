@@ -1,0 +1,96 @@
+<?php
+/**
+ * Single assessment template
+ *
+ * @package     PiperPrivacy
+ * @subpackage  Modules\ImpactAssessment
+ */
+
+// If this file is called directly, abort.
+if (!defined('WPINC')) {
+    die;
+}
+?>
+
+<div class="pp-assessment-single">
+    <div class="pp-assessment-header">
+        <h2><?php echo esc_html($assessment['title']); ?></h2>
+        <div class="pp-assessment-meta">
+            <span class="pp-status pp-status-<?php echo esc_attr($assessment['status']); ?>">
+                <?php echo esc_html(ucfirst($assessment['status'])); ?>
+            </span>
+            <span class="pp-author">
+                <?php
+                printf(
+                    /* translators: %s: author name */
+                    esc_html__('By %s', 'piper-privacy'),
+                    esc_html($assessment['author'])
+                );
+                ?>
+            </span>
+            <span class="pp-dates">
+                <?php
+                printf(
+                    /* translators: 1: creation date, 2: modification date */
+                    esc_html__('Created: %1$s | Modified: %2$s', 'piper-privacy'),
+                    esc_html(get_date_from_gmt($assessment['created_at'])),
+                    esc_html(get_date_from_gmt($assessment['updated_at']))
+                );
+                ?>
+            </span>
+        </div>
+    </div>
+
+    <div class="pp-assessment-content">
+        <div class="pp-section">
+            <h3><?php esc_html_e('Processing Activities', 'piper-privacy'); ?></h3>
+            <div class="pp-section-content">
+                <?php echo wp_kses_post(wpautop($assessment['processing_activities'])); ?>
+            </div>
+        </div>
+
+        <div class="pp-section">
+            <h3><?php esc_html_e('Risk Assessment', 'piper-privacy'); ?></h3>
+            <div class="pp-section-content">
+                <?php echo wp_kses_post(wpautop($assessment['risk_assessment'])); ?>
+            </div>
+        </div>
+
+        <div class="pp-section">
+            <h3><?php esc_html_e('Mitigation Measures', 'piper-privacy'); ?></h3>
+            <div class="pp-section-content">
+                <?php echo wp_kses_post(wpautop($assessment['mitigation_measures'])); ?>
+            </div>
+        </div>
+
+        <div class="pp-section">
+            <h3><?php esc_html_e('DPO Recommendation', 'piper-privacy'); ?></h3>
+            <div class="pp-section-content">
+                <?php echo wp_kses_post(wpautop($assessment['dpo_recommendation'])); ?>
+            </div>
+        </div>
+
+        <div class="pp-section">
+            <h3><?php esc_html_e('Review Date', 'piper-privacy'); ?></h3>
+            <div class="pp-section-content">
+                <?php echo esc_html($assessment['review_date']); ?>
+            </div>
+        </div>
+    </div>
+
+    <?php if (!empty($assessment['revisions'])) : ?>
+        <div class="pp-assessment-history">
+            <h3><?php esc_html_e('Revision History', 'piper-privacy'); ?></h3>
+            <?php $this->render_assessment_history($assessment['revisions']); ?>
+        </div>
+    <?php endif; ?>
+
+    <div class="pp-assessment-actions">
+        <button type="button" class="button pp-edit-assessment" data-id="<?php echo esc_attr($assessment['id']); ?>">
+            <?php esc_html_e('Edit', 'piper-privacy'); ?>
+        </button>
+        <button type="button" class="button pp-back-to-list">
+            <?php esc_html_e('Back to List', 'piper-privacy'); ?>
+        </button>
+    </div>
+</div>

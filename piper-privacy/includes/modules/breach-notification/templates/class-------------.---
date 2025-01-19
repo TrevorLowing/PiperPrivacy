@@ -1,0 +1,188 @@
+<?php
+/**
+ * Single breach view template
+ *
+ * @package     PiperPrivacy
+ * @subpackage  Modules\BreachNotification
+ */
+
+// If this file is called directly, abort.
+if (!defined('WPINC')) {
+    die;
+}
+?>
+
+<div class="pp-breach-single">
+    <div class="pp-breach-header">
+        <h2><?php echo esc_html($breach['title']); ?></h2>
+        <div class="pp-breach-meta">
+            <span class="pp-breach-severity">
+                <?php echo $this->format_severity($breach['severity']); ?>
+            </span>
+            <span class="pp-breach-status">
+                <?php echo $this->format_status($breach['status']); ?>
+            </span>
+            <span class="pp-breach-date">
+                <?php
+                printf(
+                    /* translators: %s: detection date */
+                    esc_html__('Detected on: %s', 'piper-privacy'),
+                    esc_html(get_date_from_gmt($breach['detection_date']))
+                );
+                ?>
+            </span>
+        </div>
+    </div>
+
+    <div class="pp-breach-content">
+        <div class="pp-breach-description">
+            <h3><?php esc_html_e('Description', 'piper-privacy'); ?></h3>
+            <?php echo wp_kses_post($breach['description']); ?>
+        </div>
+
+        <div class="pp-breach-details">
+            <h3><?php esc_html_e('Breach Details', 'piper-privacy'); ?></h3>
+            
+            <div class="pp-detail-group">
+                <h4><?php esc_html_e('Affected Data', 'piper-privacy'); ?></h4>
+                <?php if (!empty($breach['affected_data'])) : ?>
+                    <ul>
+                        <?php foreach ($breach['affected_data'] as $data_type) : ?>
+                            <li><?php echo esc_html(ucfirst($data_type)); ?></li>
+                        <?php endforeach; ?>
+                    </ul>
+                <?php else : ?>
+                    <p><?php esc_html_e('No affected data specified', 'piper-privacy'); ?></p>
+                <?php endif; ?>
+            </div>
+
+            <div class="pp-detail-group">
+                <h4><?php esc_html_e('Affected Users', 'piper-privacy'); ?></h4>
+                <?php if (!empty($breach['affected_users'])) : ?>
+                    <p>
+                        <?php
+                        printf(
+                            /* translators: %d: number of affected users */
+                            esc_html__('Total affected users: %d', 'piper-privacy'),
+                            count($breach['affected_users'])
+                        );
+                        ?>
+                    </p>
+                    <div class="pp-user-list">
+                        <?php foreach ($breach['affected_users'] as $user_id) : ?>
+                            <?php $user = get_userdata($user_id); ?>
+                            <?php if ($user) : ?>
+                                <div class="pp-user-item">
+                                    <?php echo get_avatar($user->ID, 32); ?>
+                                    <span class="pp-user-name"><?php echo esc_html($user->display_name); ?></span>
+                                    <span class="pp-user-email"><?php echo esc_html($user->user_email); ?></span>
+                                </div>
+                            <?php endif; ?>
+                        <?php endforeach; ?>
+                    </div>
+                <?php else : ?>
+                    <p><?php esc_html_e('No affected users specified', 'piper-privacy'); ?></p>
+                <?php endif; ?>
+            </div>
+
+            <div class="pp-detail-group">
+                <h4><?php esc_html_e('Mitigation Steps', 'piper-privacy'); ?></h4>
+                <?php if (!empty($breach['mitigation_steps'])) : ?>
+                    <?php echo wp_kses_post($breach['mitigation_steps']); ?>
+                <?php else : ?>
+                    <p><?php esc_html_e('No mitigation steps specified', 'piper-privacy'); ?></p>
+                <?php endif; ?>
+            </div>
+        </div>
+
+        <div class="pp-breach-notifications">
+            <h3><?php esc_html_e('Notifications', 'piper-privacy'); ?></h3>
+            <?php if (!empty($breach['notifications'])) : ?>
+                <table class="widefat">
+                    <thead>
+                        <tr>
+                            <th><?php esc_html_e('Type', 'piper-privacy'); ?></th>
+                            <th><?php esc_html_e('Recipients', 'piper-privacy'); ?></th>
+                            <th><?php esc_html_e('Status', 'piper-privacy'); ?></th>
+                            <th><?php esc_html_e('Scheduled', 'piper-privacy'); ?></th>
+                            <th><?php esc_html_e('Sent', 'piper-privacy'); ?></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <?php foreach ($breach['notifications'] as $notification) : ?>
+                            <tr>
+                                <td><?php echo esc_html(ucfirst($notification['type'])); ?></td>
+                                <td>
+                                    <?php
+                                    if (is_array($notification['recipients'])) {
+                                        echo esc_html(count($notification['recipients']));
+                                    } else {
+                                        echo '1';
+                                    }
+                                    ?>
+                                </td>
+                                <td>
+                                    <span class="pp-notification-status pp-status-<?php echo esc_attr($notification['status']); ?>">
+                                        <?php echo esc_html(ucfirst($notification['status'])); ?>
+                                    </span>
+                                </td>
+                                <td>
+                                    <?php echo esc_html(get_date_from_gmt($notification['schedule_date'])); ?>
+                                </td>
+                                <td>
+                                    <?php
+                                    if (!empty($notification['sent_at'])) {
+                                        echo esc_html(get_date_from_gmt($notification['sent_at']));
+                                    } else {
+                                        esc_html_e('Not sent', 'piper-privacy');
+                                    }
+                                    ?>
+                                </td>
+                            </tr>
+                        <?php endforeach; ?>
+                    </tbody>
+                </table>
+            <?php else : ?>
+                <p><?php esc_html_e('No notifications sent or scheduled', 'piper-privacy'); ?></p>
+            <?php endif; ?>
+
+            <div class="pp-notification-actions">
+                <button type="button" class="button pp-send-notification" data-id="<?php echo esc_attr($breach['id']); ?>">
+                    <?php esc_html_e('Send New Notification', 'piper-privacy'); ?>
+                </button>
+            </div>
+        </div>
+
+        <div class="pp-breach-timeline">
+            <h3><?php esc_html_e('Timeline', 'piper-privacy'); ?></h3>
+            <?php if (!empty($breach['timeline'])) : ?>
+                <div class="pp-timeline">
+                    <?php foreach ($breach['timeline'] as $entry) : ?>
+                        <div class="pp-timeline-entry">
+                            <div class="pp-timeline-icon pp-icon-<?php echo esc_attr($entry['type']); ?>"></div>
+                            <div class="pp-timeline-content">
+                                <p class="pp-timeline-text">
+                                    <?php echo $this->format_timeline_entry($entry); ?>
+                                </p>
+                            </div>
+                        </div>
+                    <?php endforeach; ?>
+                </div>
+            <?php else : ?>
+                <p><?php esc_html_e('No timeline entries', 'piper-privacy'); ?></p>
+            <?php endif; ?>
+        </div>
+    </div>
+
+    <div class="pp-breach-actions">
+        <button type="button" class="button pp-edit-breach" data-id="<?php echo esc_attr($breach['id']); ?>">
+            <?php esc_html_e('Edit', 'piper-privacy'); ?>
+        </button>
+        <button type="button" class="button pp-delete-breach" data-id="<?php echo esc_attr($breach['id']); ?>">
+            <?php esc_html_e('Delete', 'piper-privacy'); ?>
+        </button>
+        <button type="button" class="button pp-close-breach">
+            <?php esc_html_e('Close', 'piper-privacy'); ?>
+        </button>
+    </div>
+</div>

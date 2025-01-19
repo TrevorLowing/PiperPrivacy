@@ -1,0 +1,142 @@
+<?php
+namespace PiperPrivacy\Modules\CollectionManager\PostTypes;
+
+/**
+ * Privacy Threshold Analysis Post Type
+ */
+class PrivacyThreshold {
+    /**
+     * Post type name
+     */
+    const POST_TYPE = 'privacy-threshold';
+
+    /**
+     * Register the post type
+     */
+    public function register() {
+        register_post_type(self::POST_TYPE, [
+            'labels' => [
+                'name'               => __('Privacy Threshold Analyses', 'piper-privacy'),
+                'singular_name'      => __('Privacy Threshold Analysis', 'piper-privacy'),
+                'add_new'           => __('Add New PTA', 'piper-privacy'),
+                'add_new_item'      => __('Add New Privacy Threshold Analysis', 'piper-privacy'),
+                'edit_item'         => __('Edit Privacy Threshold Analysis', 'piper-privacy'),
+                'view_item'         => __('View Privacy Threshold Analysis', 'piper-privacy'),
+                'search_items'      => __('Search PTAs', 'piper-privacy'),
+                'not_found'         => __('No PTAs found', 'piper-privacy'),
+                'not_found_in_trash'=> __('No PTAs found in trash', 'piper-privacy'),
+            ],
+            'public'              => false,
+            'show_ui'             => true,
+            'show_in_menu'        => 'privacy-collections',
+            'supports'            => ['title', 'editor', 'revisions'],
+            'has_archive'         => false,
+            'rewrite'             => false,
+            'capability_type'     => 'post',
+            'map_meta_cap'        => true,
+            'hierarchical'        => false,
+            'show_in_rest'        => true
+        ]);
+
+        $this->register_meta_fields();
+    }
+
+    /**
+     * Register meta fields for the post type
+     */
+    private function register_meta_fields() {
+        // PTA Information
+        register_post_meta(self::POST_TYPE, 'collection_reference', [
+            'type'          => 'integer',
+            'description'   => 'Associated Privacy Collection ID',
+            'single'        => true,
+            'show_in_rest'  => true,
+        ]);
+
+        register_post_meta(self::POST_TYPE, 'pta_status', [
+            'type'          => 'string',
+            'description'   => 'Current status of the PTA',
+            'single'        => true,
+            'show_in_rest'  => true,
+            'default'       => 'draft',
+        ]);
+
+        // PII Assessment
+        register_post_meta(self::POST_TYPE, 'contains_pii', [
+            'type'          => 'boolean',
+            'description'   => 'Whether the collection contains PII',
+            'single'        => true,
+            'show_in_rest'  => true,
+            'default'       => false,
+        ]);
+
+        register_post_meta(self::POST_TYPE, 'pii_categories', [
+            'type'          => 'array',
+            'description'   => 'Categories of PII identified',
+            'single'        => true,
+            'show_in_rest'  => [
+                'schema' => [
+                    'type'  => 'array',
+                    'items' => ['type' => 'string'],
+                ],
+            ],
+        ]);
+
+        // Risk Assessment
+        register_post_meta(self::POST_TYPE, 'risk_level', [
+            'type'          => 'string',
+            'description'   => 'Assessed risk level',
+            'single'        => true,
+            'show_in_rest'  => true,
+            'default'       => 'low',
+        ]);
+
+        register_post_meta(self::POST_TYPE, 'risk_factors', [
+            'type'          => 'array',
+            'description'   => 'Identified risk factors',
+            'single'        => true,
+            'show_in_rest'  => [
+                'schema' => [
+                    'type'  => 'array',
+                    'items' => ['type' => 'string'],
+                ],
+            ],
+        ]);
+
+        // Controls Assessment
+        register_post_meta(self::POST_TYPE, 'privacy_controls', [
+            'type'          => 'array',
+            'description'   => 'Implemented privacy controls',
+            'single'        => true,
+            'show_in_rest'  => [
+                'schema' => [
+                    'type'  => 'array',
+                    'items' => ['type' => 'string'],
+                ],
+            ],
+        ]);
+
+        // Approval Information
+        register_post_meta(self::POST_TYPE, 'approver_id', [
+            'type'          => 'integer',
+            'description'   => 'ID of the approving user',
+            'single'        => true,
+            'show_in_rest'  => true,
+        ]);
+
+        register_post_meta(self::POST_TYPE, 'approval_date', [
+            'type'          => 'string',
+            'description'   => 'Date of approval',
+            'single'        => true,
+            'show_in_rest'  => true,
+        ]);
+
+        register_post_meta(self::POST_TYPE, 'requires_pia', [
+            'type'          => 'boolean',
+            'description'   => 'Whether a Privacy Impact Assessment is required',
+            'single'        => true,
+            'show_in_rest'  => true,
+            'default'       => false,
+        ]);
+    }
+}

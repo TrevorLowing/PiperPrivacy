@@ -1,0 +1,159 @@
+<?php
+namespace PiperPrivacy\Modules\CollectionManager\Forms;
+
+/**
+ * Base Form Handler
+ */
+abstract class BaseForm {
+    /**
+     * Form ID
+     *
+     * @var string
+     */
+    protected $form_id;
+
+    /**
+     * Form configuration
+     *
+     * @var array
+     */
+    protected $config;
+
+    /**
+     * Initialize the form
+     */
+    public function __construct() {
+        $this->form_id = $this->get_form_id();
+        $this->config = $this->get_config();
+        $this->setup_hooks();
+    }
+
+    /**
+     * Get the form ID
+     *
+     * @return string
+     */
+    abstract protected function get_form_id();
+
+    /**
+     * Get form configuration
+     *
+     * @return array
+     */
+    abstract protected function get_config();
+
+    /**
+     * Setup form hooks
+     */
+    protected function setup_hooks() {
+        add_action('fluentform/submission_inserted', [$this, 'handle_submission'], 10, 3);
+        add_filter("fluentform/form_settings_ajax_{$this->form_id}", [$this, 'register_form_settings']);
+    }
+
+    /**
+     * Handle form submission
+     *
+     * @param int   $entry_id
+     * @param array $form_data
+     * @param array $form
+     */
+    public function handle_submission($entry_id, $form_data, $form) {
+        if ($form->id !== $this->form_id) {
+            return;
+        }
+
+        $this->process_submission($entry_id, $form_data);
+    }
+
+    /**
+     * Process form submission
+     *
+     * @param int   $entry_id
+     * @param array $form_data
+     */
+    abstract protected function process_submission($entry_id, $form_data);
+
+    /**
+     * Register form settings
+     *
+     * @param array $settings
+     * @return array
+     */
+    public function register_form_settings($settings) {
+        return array_merge($settings, $this->get_form_settings());
+    }
+
+    /**
+     * Get form settings
+     *
+     * @return array
+     */
+    protected function get_form_settings() {
+        return [];
+    }
+
+    /**
+     * Validate form data
+     *
+     * @param array $data
+     * @return bool|WP_Error
+     */
+    protected function validate_form_data($data) {
+        return true;
+    }
+
+    /**
+     * Sanitize form data
+     *
+     * @param array $data
+     * @return array
+     */
+    protected function sanitize_form_data($data) {
+        return array_map('sanitize_text_field', $data);
+    }
+
+    /**
+     * Create or update post from form data
+     *
+     * @param string $post_type
+     * @param array  $data
+     * @param int    $post_id
+     * @return int|WP_Error
+     */
+    protected function save_post($post_type, $data, $post_id = 0) {
+        $post_arr = [
+            'post_type'    => $post_type,
+            'post_status'  => 'publish',
+            'post_title'   => $data['title'] ?? '',
+            'post_content' => $data['content'] ?? '',
+        ];
+
+        if ($post_id) {
+            $post_arr['ID'] = $post_id;
+            return wp_update_post($post_arr);
+        }
+
+        return wp_insert_post($post_arr);
+    }
+
+    /**
+     * Save post meta data
+     *
+     * @param int   $post_id
+     * @param array $meta_data
+     */
+    protected function save_meta_data($post_id, $meta_data) {
+        foreach ($meta_data as $key => $value) {
+            update_post_meta($post_id, $key, $value);
+        }
+    }
+
+    /**
+     * Handle form errors
+     *
+     * @param WP_Error $error
+     */
+    protected function handle_error($error) {
+        do_action('piper_privacy_form_error', $error, $this->form_id);
+    }
+}

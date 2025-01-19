@@ -1,0 +1,182 @@
+<?php
+/**
+ * Notification form template
+ *
+ * @package     PiperPrivacy
+ * @subpackage  Modules\BreachNotification
+ */
+
+// If this file is called directly, abort.
+if (!defined('WPINC')) {
+    die;
+}
+?>
+
+<div class="pp-notification-form">
+    <h3><?php esc_html_e('Send Notification', 'piper-privacy'); ?></h3>
+
+    <form id="pp-notification-form" method="post">
+        <?php wp_nonce_field('pp-send-notification', 'pp_notification_nonce'); ?>
+        <input type="hidden" name="breach_id" value="<?php echo esc_attr($breach_id); ?>">
+
+        <div class="form-field">
+            <label for="notification_type">
+                <?php esc_html_e('Notification Type', 'piper-privacy'); ?>
+            </label>
+            <select name="type" id="notification_type" required>
+                <option value=""><?php esc_html_e('Select Type', 'piper-privacy'); ?></option>
+                <option value="authority"><?php esc_html_e('Authority', 'piper-privacy'); ?></option>
+                <option value="affected_users"><?php esc_html_e('Affected Users', 'piper-privacy'); ?></option>
+                <option value="internal"><?php esc_html_e('Internal', 'piper-privacy'); ?></option>
+            </select>
+        </div>
+
+        <div class="form-field">
+            <label for="notification_template">
+                <?php esc_html_e('Template', 'piper-privacy'); ?>
+            </label>
+            <select name="template" id="notification_template" required>
+                <option value=""><?php esc_html_e('Select Template', 'piper-privacy'); ?></option>
+                <?php foreach ($templates as $template) : ?>
+                    <option value="<?php echo esc_attr($template['id']); ?>">
+                        <?php echo esc_html($template['name']); ?>
+                    </option>
+                <?php endforeach; ?>
+            </select>
+        </div>
+
+        <div class="form-field pp-recipients-field" style="display: none;">
+            <label for="recipients">
+                <?php esc_html_e('Recipients', 'piper-privacy'); ?>
+            </label>
+            <select name="recipients[]" id="recipients" multiple>
+                <?php
+                // Recipients will be populated via JavaScript based on notification type
+                ?>
+            </select>
+            <p class="description">
+                <?php esc_html_e('Select one or more recipients for the notification.', 'piper-privacy'); ?>
+            </p>
+        </div>
+
+        <div class="form-field">
+            <label for="schedule_date">
+                <?php esc_html_e('Schedule Date', 'piper-privacy'); ?>
+            </label>
+            <input type="datetime-local" name="schedule_date" id="schedule_date" 
+                   value="<?php echo esc_attr(current_time('Y-m-d\TH:i')); ?>" required>
+            <p class="description">
+                <?php esc_html_e('When should this notification be sent?', 'piper-privacy'); ?>
+            </p>
+        </div>
+
+        <div class="submit">
+            <button type="submit" class="button button-primary">
+                <?php esc_html_e('Schedule Notification', 'piper-privacy'); ?>
+            </button>
+            <button type="button" class="button pp-modal-close">
+                <?php esc_html_e('Cancel', 'piper-privacy'); ?>
+            </button>
+        </div>
+    </form>
+</div>
+
+<script type="text/javascript">
+jQuery(document).ready(function($) {
+    var $form = $('#pp-notification-form');
+    var $type = $('#notification_type');
+    var $recipients = $('#recipients');
+    var $recipientsField = $('.pp-recipients-field');
+
+    // Handle notification type change
+    $type.on('change', function() {
+        var type = $(this).val();
+        
+        if (!type) {
+            $recipientsField.hide();
+            return;
+        }
+
+        // Show recipients field
+        $recipientsField.show();
+        
+        // Clear previous options
+        $recipients.empty();
+
+        // Load appropriate recipients based on type
+        switch (type) {
+            case 'authority':
+                // Load authority email from settings
+                $.get(ppBreach.apiRoot + '/settings', function(response) {
+                    if (response.authority_email) {
+                        $recipients.append(new Option(
+                            '<?php esc_html_e('Data Protection Authority', 'piper-privacy'); ?>', 
+                            response.authority_email
+                        ));
+                    }
+                });
+                break;
+
+            case 'affected_users':
+                // Load affected users for this breach
+                $.get(ppBreach.apiRoot + '/breaches/' + $form.find('[name="breach_id"]').val(), function(response) {
+                    if (response.affected_users && response.affected_users.length) {
+                        response.affected_users.forEach(function(user) {
+                            $recipients.append(new Option(
+                                user.name + ' (' + user.email + ')',
+                                user.id
+                            ));
+                        });
+                    }
+                });
+                break;
+
+            case 'internal':
+                // Load internal users (admins and editors)
+                $.get(ppBreach.apiRoot + '/users', {
+                    roles: ['administrator', 'editor']
+                }, function(response) {
+                    response.forEach(function(user) {
+                        $recipients.append(new Option(
+                            user.name + ' (' + user.email + ')',
+                            user.email
+                        ));
+                    });
+                });
+                break;
+        }
+    });
+
+    // Handle form submission
+    $form.on('submit', function(e) {
+        e.preventDefault();
+
+        var formData = new FormData(this);
+
+        $.ajax({
+            url: ppBreach.apiRoot + '/breaches/' + formData.get('breach_id') + '/notifications',
+            method: 'POST',
+            data: formData,
+            processData: false,
+            contentType: false,
+            beforeSend: function(xhr) {
+                xhr.setRequestHeader('X-WP-Nonce', ppBreach.nonce);
+            },
+            success: function(response) {
+                // Show success message and close modal
+                alert(ppBreach.i18n.notificationScheduled);
+                $('.pp-modal-close').trigger('click');
+                
+                // Refresh breach view if we're on single view
+                if (typeof refreshBreachView === 'function') {
+                    refreshBreachView();
+                }
+            },
+            error: function(xhr) {
+                // Show error message
+                alert(xhr.responseJSON?.message || ppBreach.i18n.error);
+            }
+        });
+    });
+});
+</script>

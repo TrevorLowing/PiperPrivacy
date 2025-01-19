@@ -1,0 +1,54 @@
+<?php
+/**
+ * Assessment history template
+ *
+ * @package     PiperPrivacy
+ * @subpackage  Modules\ImpactAssessment
+ */
+
+// If this file is called directly, abort.
+if (!defined('WPINC')) {
+    die;
+}
+?>
+
+<div class="pp-revision-history">
+    <table class="widefat">
+        <thead>
+            <tr>
+                <th><?php esc_html_e('Date', 'piper-privacy'); ?></th>
+                <th><?php esc_html_e('User', 'piper-privacy'); ?></th>
+                <th><?php esc_html_e('Changes', 'piper-privacy'); ?></th>
+            </tr>
+        </thead>
+        <tbody>
+            <?php foreach ($revisions as $revision) : ?>
+                <tr>
+                    <td><?php echo esc_html(get_date_from_gmt($revision['timestamp'])); ?></td>
+                    <td>
+                        <?php
+                        $user = get_userdata($revision['user_id']);
+                        echo esc_html($user ? $user->display_name : __('Unknown', 'piper-privacy'));
+                        ?>
+                    </td>
+                    <td>
+                        <?php
+                        $changes = [];
+                        foreach ($revision['changes'] as $field => $value) {
+                            if ('id' === $field) {
+                                continue;
+                            }
+                            $changes[] = sprintf(
+                                '<strong>%s</strong>: %s',
+                                esc_html(ucfirst(str_replace('_', ' ', $field))),
+                                esc_html(is_array($value) ? 'Updated' : substr($value, 0, 50) . '...')
+                            );
+                        }
+                        echo implode(', ', $changes);
+                        ?>
+                    </td>
+                </tr>
+            <?php endforeach; ?>
+        </tbody>
+    </table>
+</div>

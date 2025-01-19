@@ -1,0 +1,16 @@
+{
+    "name": "piper-privacy/piper-privacy",
+    "description": "Complete privacy management system with collection lifecycle management, impact assessments, and workflow automation.",
+    "type": "wordpress-plugin",
+    "license": "GPL-2.0-or-later",
+    "require": {
+        "php": ">=8.0",
+        "mpdf/mpdf": "^8.1",
+        "league/csv": "^9.8"
+    },
+    "autoload": {
+        "psr-4": {
+            "PiperPrivacy\\": "includes/"
+        }
+    }
+}

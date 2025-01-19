@@ -1,0 +1,61 @@
+<?php
+namespace PiperPrivacy\Modules\CollectionManager\Forms;
+
+/**
+ * Privacy Threshold Analysis Form Handler
+ */
+class PrivacyThresholdForm extends BaseForm {
+    /**
+     * Get the form ID
+     */
+    protected function get_form_id() {
+        return 'privacy_threshold_form';
+    }
+
+    /**
+     * Get form configuration
+     */
+    protected function get_config() {
+        return [
+            'title' => __('Privacy Threshold Analysis', 'piper-privacy'),
+            'fields' => [
+                'collection_reference' => [
+                    'type' => 'select',
+                    'label' => __('Associated Privacy Collection', 'piper-privacy'),
+                    'required' => true,
+                    'dynamic_options' => [
+                        'post_type' => 'privacy-collection',
+                        'value_field' => 'ID',
+                        'label_field' => 'post_title'
+                    ]
+                ],
+                'contains_pii' => [
+                    'type' => 'radio',
+                    'label' => __('Contains PII?', 'piper-privacy'),
+                    'required' => true,
+                    'options' => [
+                        'yes' => __('Yes', 'piper-privacy'),
+                        'no' => __('No', 'piper-privacy')
+                    ]
+                ],
+                'pii_categories' => [
+                    'type' => 'checkbox',
+                    'label' => __('PII Categories', 'piper-privacy'),
+                    'required' => true,
+                    'options' => [
+                        'contact' => __('Contact Information', 'piper-privacy'),
+                        'demographic' => __('Demographic Data', 'piper-privacy'),
+                        'financial' => __('Financial Information', 'piper-privacy'),
+                        'medical' => __('Medical Information', 'piper-privacy'),
+                        'biometric' => __('Biometric Data', 'piper-privacy'),
+                        'behavioral' => __('Behavioral Data', 'piper-privacy'),
+                    ],
+                    'conditional' => [
+                        'field' => 'contains_pii',
+                        'value' => 'yes'
+                    ]
+                ]
+            ]
+        ];
+    }
+}

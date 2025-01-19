@@ -1,0 +1,210 @@
+// Stage-Specific Transitions
+@layer stage-transitions {
+    // PTA Stage Transitions
+    .pta-stage {
+        @apply transition-all duration-300;
+    }
+
+    .pta-stage-enter {
+        @apply opacity-0 transform scale-95;
+    }
+
+    .pta-stage-enter-active {
+        @apply opacity-100 transform scale-100;
+    }
+
+    .pta-stage-exit {
+        @apply opacity-100 transform scale-100;
+    }
+
+    .pta-stage-exit-active {
+        @apply opacity-0 transform scale-95;
+    }
+
+    // PIA Stage Transitions
+    .pia-stage {
+        @apply transition-all duration-500;
+    }
+
+    .pia-stage-enter {
+        @apply opacity-0 transform translate-y-4;
+    }
+
+    .pia-stage-enter-active {
+        @apply opacity-100 transform translate-y-0;
+    }
+
+    .pia-stage-exit {
+        @apply opacity-100 transform translate-y-0;
+    }
+
+    .pia-stage-exit-active {
+        @apply opacity-0 transform -translate-y-4;
+    }
+
+    // Implementation Stage Transitions
+    .implementation-stage {
+        @apply transition-all duration-400;
+    }
+
+    .implementation-stage-enter {
+        @apply opacity-0 transform translate-x-4;
+    }
+
+    .implementation-stage-enter-active {
+        @apply opacity-100 transform translate-x-0;
+    }
+
+    .implementation-stage-exit {
+        @apply opacity-100 transform translate-x-0;
+    }
+
+    .implementation-stage-exit-active {
+        @apply opacity-0 transform -translate-x-4;
+    }
+
+    // Review Stage Transitions
+    .review-stage {
+        @apply transition-all duration-300;
+    }
+
+    .review-stage-enter {
+        @apply opacity-0 transform rotate-2 scale-95;
+    }
+
+    .review-stage-enter-active {
+        @apply opacity-100 transform rotate-0 scale-100;
+    }
+
+    .review-stage-exit {
+        @apply opacity-100 transform rotate-0 scale-100;
+    }
+
+    .review-stage-exit-active {
+        @apply opacity-0 transform -rotate-2 scale-95;
+    }
+}
+
+// Stage-Specific Progress Indicators
+@layer stage-progress {
+    // PTA Progress
+    .pta-progress {
+        @apply h-1 bg-gray-200 overflow-hidden rounded-full;
+    }
+
+    .pta-progress-bar {
+        @apply h-full bg-blue-500 transition-all duration-300;
+        transform-origin: left;
+    }
+
+    // PIA Progress
+    .pia-progress {
+        @apply flex gap-2;
+    }
+
+    .pia-progress-step {
+        @apply flex-1 h-2 rounded-full bg-gray-200 overflow-hidden;
+    }
+
+    .pia-progress-fill {
+        @apply h-full bg-green-500 transition-all duration-500;
+    }
+
+    // Implementation Progress
+    .implementation-progress {
+        @apply grid grid-cols-4 gap-1;
+    }
+
+    .implementation-progress-segment {
+        @apply h-1 bg-gray-200 rounded;
+    }
+
+    .implementation-progress-active {
+        @apply bg-yellow-500;
+    }
+
+    // Review Progress
+    .review-progress {
+        @apply relative h-8 border rounded-lg overflow-hidden;
+    }
+
+    .review-progress-bar {
+        @apply absolute inset-y-0 left-0 bg-blue-500 transition-all duration-300;
+    }
+}
+
+// Stage-Specific Status Indicators
+@layer stage-status {
+    // PTA Status
+    .pta-status {
+        @apply inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium;
+    }
+
+    .pta-status-pending { @apply bg-yellow-100 text-yellow-800; }
+    .pta-status-review { @apply bg-blue-100 text-blue-800; }
+    .pta-status-approved { @apply bg-green-100 text-green-800; }
+    .pta-status-rejected { @apply bg-red-100 text-red-800; }
+
+    // PIA Status
+    .pia-status {
+        @apply flex items-center gap-2;
+    }
+
+    .pia-status-icon {
+        @apply w-2.5 h-2.5 rounded-full;
+    }
+
+    .pia-status-draft .pia-status-icon { @apply bg-gray-400; }
+    .pia-status-active .pia-status-icon { @apply bg-blue-500; }
+    .pia-status-complete .pia-status-icon { @apply bg-green-500; }
+
+    // Implementation Status
+    .implementation-status {
+        @apply flex items-center justify-between p-2 rounded;
+    }
+
+    .implementation-status-planning { @apply bg-blue-50; }
+    .implementation-status-testing { @apply bg-yellow-50; }
+    .implementation-status-complete { @apply bg-green-50; }
+
+    // Review Status
+    .review-status {
+        @apply relative pl-6;
+    }
+
+    .review-status::before {
+        @apply absolute left-0 w-4 h-4 rounded-full;
+        content: '';
+    }
+
+    .review-status-pending::before { @apply bg-yellow-400; }
+    .review-status-approved::before { @apply bg-green-400; }
+    .review-status-rejected::before { @apply bg-red-400; }
+}
+
+// Stage-Specific Actions
+@layer stage-actions {
+    // PTA Actions
+    .pta-action {
+        @apply inline-flex items-center px-3 py-1.5 text-sm font-medium rounded-md 
+               transition-colors duration-200;
+    }
+
+    // PIA Actions
+    .pia-action {
+        @apply flex items-center justify-center px-4 py-2 rounded-lg shadow-sm 
+               transition-all duration-200 hover:shadow-md;
+    }
+
+    // Implementation Actions
+    .implementation-action {
+        @apply inline-flex items-center gap-2 px-4 py-2 rounded border 
+               transition-all duration-200 hover:border-current;
+    }
+
+    // Review Actions
+    .review-action {
+        @apply relative inline-flex items-center px-6 py-2 overflow-hidden rounded-full 
+               transition-all duration-300 hover:pl-8;
+    }
+}

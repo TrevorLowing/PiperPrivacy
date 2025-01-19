@@ -1,0 +1,126 @@
+<?php
+/**
+ * Single consent view template
+ *
+ * @package     PiperPrivacy
+ * @subpackage  Modules\ConsentManager
+ */
+
+// If this file is called directly, abort.
+if (!defined('WPINC')) {
+    die;
+}
+
+$user = get_userdata($consent['user_id']);
+if (!$user) {
+    return;
+}
+?>
+
+<div class="pp-consent-single">
+    <div class="pp-consent-header">
+        <h2><?php esc_html_e('Consent Record Details', 'piper-privacy'); ?></h2>
+        <button type="button" class="pp-close-single">&times;</button>
+    </div>
+
+    <div class="pp-consent-body">
+        <!-- User Information -->
+        <div class="pp-section">
+            <h3><?php esc_html_e('User Information', 'piper-privacy'); ?></h3>
+            <table class="form-table">
+                <tr>
+                    <th><?php esc_html_e('Name', 'piper-privacy'); ?></th>
+                    <td><?php echo esc_html($user->display_name); ?></td>
+                </tr>
+                <tr>
+                    <th><?php esc_html_e('Email', 'piper-privacy'); ?></th>
+                    <td><?php echo esc_html($user->user_email); ?></td>
+                </tr>
+            </table>
+        </div>
+
+        <!-- Consent Information -->
+        <div class="pp-section">
+            <h3><?php esc_html_e('Consent Information', 'piper-privacy'); ?></h3>
+            <table class="form-table">
+                <tr>
+                    <th><?php esc_html_e('Type', 'piper-privacy'); ?></th>
+                    <td><?php echo esc_html(ucfirst($consent['consent_type'])); ?></td>
+                </tr>
+                <tr>
+                    <th><?php esc_html_e('Status', 'piper-privacy'); ?></th>
+                    <td>
+                        <span class="pp-status pp-status-<?php echo esc_attr($consent['status']); ?>">
+                            <?php echo esc_html(ucfirst($consent['status'])); ?>
+                        </span>
+                    </td>
+                </tr>
+                <tr>
+                    <th><?php esc_html_e('Date Given', 'piper-privacy'); ?></th>
+                    <td><?php echo esc_html(get_date_from_gmt($consent['created_at'])); ?></td>
+                </tr>
+                <?php if (!empty($consent['expiry_date'])) : ?>
+                    <tr>
+                        <th><?php esc_html_e('Expiry Date', 'piper-privacy'); ?></th>
+                        <td><?php echo esc_html(get_date_from_gmt($consent['expiry_date'])); ?></td>
+                    </tr>
+                <?php endif; ?>
+            </table>
+        </div>
+
+        <!-- Technical Information -->
+        <div class="pp-section">
+            <h3><?php esc_html_e('Technical Information', 'piper-privacy'); ?></h3>
+            <table class="form-table">
+                <tr>
+                    <th><?php esc_html_e('IP Address', 'piper-privacy'); ?></th>
+                    <td><?php echo esc_html($consent['ip_address']); ?></td>
+                </tr>
+                <tr>
+                    <th><?php esc_html_e('User Agent', 'piper-privacy'); ?></th>
+                    <td><?php echo esc_html($consent['user_agent']); ?></td>
+                </tr>
+                <tr>
+                    <th><?php esc_html_e('Version', 'piper-privacy'); ?></th>
+                    <td><?php echo esc_html($consent['version']); ?></td>
+                </tr>
+            </table>
+        </div>
+
+        <!-- Additional Information -->
+        <?php if (!empty($consent['additional_info'])) : ?>
+            <div class="pp-section">
+                <h3><?php esc_html_e('Additional Information', 'piper-privacy'); ?></h3>
+                <div class="pp-additional-info">
+                    <?php echo wp_kses_post($consent['additional_info']); ?>
+                </div>
+            </div>
+        <?php endif; ?>
+
+        <!-- Consent History -->
+        <?php if (!empty($consent['revisions'])) : ?>
+            <div class="pp-section">
+                <h3><?php esc_html_e('Consent History', 'piper-privacy'); ?></h3>
+                <div class="pp-consent-history">
+                    <?php $this->render_consent_history($consent['revisions']); ?>
+                </div>
+            </div>
+        <?php endif; ?>
+    </div>
+
+    <div class="pp-consent-footer">
+        <div class="pp-actions">
+            <?php if ('withdrawn' !== $consent['status']) : ?>
+                <button type="button" class="button pp-withdraw-consent" data-id="<?php echo esc_attr($consent['id']); ?>">
+                    <?php esc_html_e('Withdraw Consent', 'piper-privacy'); ?>
+                </button>
+            <?php endif; ?>
+            <button type="button" class="button pp-delete-consent" data-id="<?php echo esc_attr($consent['id']); ?>">
+                <?php esc_html_e('Delete Record', 'piper-privacy'); ?>
+            </button>
+            <button type="button" class="button pp-close-single">
+                <?php esc_html_e('Close', 'piper-privacy'); ?>
+            </button>
+        </div>
+    </div>
+</div>

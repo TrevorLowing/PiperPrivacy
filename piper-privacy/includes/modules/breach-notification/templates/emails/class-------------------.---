@@ -1,0 +1,113 @@
+<?php
+/**
+ * Vendor Notification Email Template
+ *
+ * @package     PiperPrivacy
+ * @subpackage  Modules\BreachNotification\Templates\Emails
+ */
+
+// If this file is called directly, abort.
+if (!defined('WPINC')) {
+    die;
+}
+
+/**
+ * Get vendor notification template
+ *
+ * @param array $breach Breach data.
+ * @param array $vendor Vendor data.
+ * @return array Email template with subject and message.
+ */
+function pp_get_vendor_notification_template($breach, $vendor) {
+    $site_name = get_bloginfo('name');
+    $site_url = get_bloginfo('url');
+    $admin_email = get_bloginfo('admin_email');
+
+    // Format detection date
+    $detection_date = wp_date(get_option('date_format') . ' ' . get_option('time_format'), strtotime($breach['detection_date']));
+
+    $subject = sprintf(
+        /* translators: 1: Site name */
+        __('[Urgent] Data Security Incident Notice - %s', 'piper-privacy'),
+        $site_name
+    );
+
+    $message = sprintf(
+        /* translators: 1: Vendor name */
+        __('Dear %s,', 'piper-privacy'),
+        $vendor['name']
+    ) . "\n\n";
+
+    $message .= sprintf(
+        /* translators: 1: Site name */
+        __('We are writing to inform you of a data security incident at %s that may affect our shared data processing activities.', 'piper-privacy'),
+        $site_name
+    ) . "\n\n";
+
+    $message .= __('Incident Details:', 'piper-privacy') . "\n";
+    $message .= str_repeat('-', 50) . "\n";
+    $message .= sprintf(
+        /* translators: 1: Detection date */
+        __("Detection Date: %s\n", 'piper-privacy'),
+        $detection_date
+    );
+    $message .= sprintf(
+        /* translators: 1: Breach severity */
+        __("Severity Level: %s\n", 'piper-privacy'),
+        ucfirst($breach['severity'])
+    );
+    $message .= $breach['description'] . "\n\n";
+
+    $message .= __('Potential Impact on Vendor Systems:', 'piper-privacy') . "\n";
+    $message .= str_repeat('-', 50) . "\n";
+    $message .= __("Please assess your systems for:
+1. Unauthorized access attempts
+2. Unusual data access patterns
+3. Suspicious API calls or integrations
+4. Anomalies in shared data processing
+5. Security logs for the affected timeframe", 'piper-privacy') . "\n\n";
+
+    $message .= __('Required Actions:', 'piper-privacy') . "\n";
+    $message .= str_repeat('-', 50) . "\n";
+    $message .= __("We kindly request that you:
+1. Review your security logs for any related incidents
+2. Check the integrity of any shared data or systems
+3. Verify the security of integration points
+4. Update access credentials if necessary
+5. Report any findings back to us", 'piper-privacy') . "\n\n";
+
+    if (!empty($breach['mitigation_steps'])) {
+        $message .= __('Our Current Mitigation Steps:', 'piper-privacy') . "\n";
+        $message .= str_repeat('-', 50) . "\n";
+        $message .= $breach['mitigation_steps'] . "\n\n";
+    }
+
+    $message .= __('Next Steps:', 'piper-privacy') . "\n";
+    $message .= str_repeat('-', 50) . "\n";
+    $message .= __("1. Please acknowledge receipt of this notification
+2. Conduct your internal assessment
+3. Share any relevant findings with us
+4. Coordinate on joint mitigation efforts if needed
+5. Update your incident response documentation", 'piper-privacy') . "\n\n";
+
+    $message .= __('Contact Information:', 'piper-privacy') . "\n";
+    $message .= str_repeat('-', 50) . "\n";
+    $message .= sprintf(
+        /* translators: 1: Admin email */
+        __('Please direct any questions or findings to our security team at %s', 'piper-privacy'),
+        $admin_email
+    ) . "\n\n";
+
+    $message .= __('This information is confidential and should be shared only with relevant personnel within your organization.', 'piper-privacy') . "\n\n";
+
+    $message .= sprintf(
+        /* translators: 1: Site name */
+        __('Best regards,\n%s Security Team', 'piper-privacy'),
+        $site_name
+    );
+
+    return [
+        'subject' => $subject,
+        'message' => $message,
+    ];
+}

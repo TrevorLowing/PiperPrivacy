@@ -1,0 +1,178 @@
+/* Consent Manager Public Styles */
+
+/* Consent Form */
+.pp-consent-form {
+    max-width: 600px;
+    margin: 20px auto;
+    padding: 20px;
+    background: #fff;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.pp-consent-title {
+    margin: 0 0 15px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid #eee;
+    font-size: 1.4em;
+    color: #333;
+}
+
+.pp-consent-description {
+    margin-bottom: 20px;
+    color: #666;
+    line-height: 1.6;
+}
+
+/* Form Elements */
+.pp-form-row {
+    margin-bottom: 15px;
+}
+
+.pp-form-row label {
+    display: block;
+    margin-bottom: 10px;
+    font-weight: normal;
+    color: #333;
+}
+
+.pp-form-row input[type="checkbox"] {
+    margin-right: 8px;
+}
+
+.pp-form-actions {
+    margin-top: 20px;
+    text-align: left;
+}
+
+.pp-form-actions .button {
+    margin-right: 10px;
+}
+
+/* Status Indicators */
+.pp-consent-status {
+    margin: 15px 0;
+    padding: 10px;
+    border-radius: 4px;
+}
+
+.pp-consent-granted {
+    background: #dff0d8;
+    color: #3c763d;
+    border: 1px solid #d6e9c6;
+}
+
+.pp-consent-withdrawn {
+    background: #f2dede;
+    color: #a94442;
+    border: 1px solid #ebccd1;
+}
+
+/* Messages */
+.pp-consent-message {
+    padding: 10px 15px;
+    margin: 10px 0;
+    border-radius: 4px;
+    display: none;
+}
+
+.pp-consent-message.success {
+    background: #dff0d8;
+    color: #3c763d;
+    border: 1px solid #d6e9c6;
+}
+
+.pp-consent-message.error {
+    background: #f2dede;
+    color: #a94442;
+    border: 1px solid #ebccd1;
+}
+
+/* Preferences Page */
+.pp-consent-preferences {
+    max-width: 800px;
+    margin: 20px auto;
+}
+
+.pp-consent-group {
+    background: #fff;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    margin-bottom: 20px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.pp-consent-group-header {
+    padding: 15px 20px;
+    border-bottom: 1px solid #eee;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.pp-consent-group-header h3 {
+    margin: 0;
+    font-size: 1.2em;
+    color: #333;
+}
+
+.pp-consent-group-body {
+    padding: 20px;
+}
+
+.pp-consent-status {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.pp-status {
+    display: inline-block;
+    padding: 3px 8px;
+    border-radius: 3px;
+    font-size: 12px;
+    font-weight: 500;
+    text-transform: uppercase;
+}
+
+.pp-status-granted {
+    background: #dff0d8;
+    color: #3c763d;
+}
+
+.pp-status-withdrawn {
+    background: #f2dede;
+    color: #a94442;
+}
+
+.pp-expiry {
+    font-size: 12px;
+    color: #666;
+}
+
+/* Responsive Adjustments */
+@media screen and (max-width: 600px) {
+    .pp-consent-form {
+        margin: 10px;
+        padding: 15px;
+    }
+
+    .pp-consent-group-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 10px;
+    }
+
+    .pp-form-actions {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+    }
+
+    .pp-form-actions .button {
+        margin: 0;
+        width: 100%;
+        text-align: center;
+    }
+}

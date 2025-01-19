@@ -1,0 +1,344 @@
+<?php
+namespace PiperPrivacy\Modules\CollectionManager\Forms;
+
+/**
+ * Privacy Impact Assessment Form Handler
+ */
+class PrivacyImpactForm extends BaseForm {
+    /**
+     * Get the form ID
+     */
+    protected function get_form_id() {
+        return 'privacy_impact_form';
+    }
+
+    /**
+     * Get form configuration
+     */
+    protected function get_config() {
+        return [
+            'title' => __('Privacy Impact Assessment', 'piper-privacy'),
+            'fields' => [
+                // Basic Information
+                'collection_reference' => [
+                    'type' => 'select',
+                    'label' => __('Associated Privacy Collection', 'piper-privacy'),
+                    'required' => true,
+                    'dynamic_options' => [
+                        'post_type' => 'privacy-collection',
+                        'value_field' => 'ID',
+                        'label_field' => 'post_title'
+                    ]
+                ],
+                'pta_reference' => [
+                    'type' => 'select',
+                    'label' => __('Associated PTA', 'piper-privacy'),
+                    'required' => true,
+                    'dynamic_options' => [
+                        'post_type' => 'privacy-threshold',
+                        'value_field' => 'ID',
+                        'label_field' => 'post_title'
+                    ]
+                ],
+
+                // System Analysis
+                'system_description' => [
+                    'type' => 'rich_textarea',
+                    'label' => __('System Description', 'piper-privacy'),
+                    'required' => true,
+                    'help' => __('Provide a detailed description of the system and its privacy implications', 'piper-privacy')
+                ],
+                'data_flows' => [
+                    'type' => 'repeater',
+                    'label' => __('Data Flows', 'piper-privacy'),
+                    'required' => true,
+                    'fields' => [
+                        'source' => [
+                            'type' => 'text',
+                            'label' => __('Data Source', 'piper-privacy')
+                        ],
+                        'destination' => [
+                            'type' => 'text',
+                            'label' => __('Data Destination', 'piper-privacy')
+                        ],
+                        'data_elements' => [
+                            'type' => 'textarea',
+                            'label' => __('Data Elements', 'piper-privacy')
+                        ],
+                        'transfer_method' => [
+                            'type' => 'select',
+                            'label' => __('Transfer Method', 'piper-privacy'),
+                            'options' => [
+                                'api' => __('API', 'piper-privacy'),
+                                'manual' => __('Manual', 'piper-privacy'),
+                                'automated' => __('Automated Process', 'piper-privacy'),
+                                'batch' => __('Batch Transfer', 'piper-privacy')
+                            ]
+                        ],
+                        'encryption' => [
+                            'type' => 'select',
+                            'label' => __('Encryption Method', 'piper-privacy'),
+                            'options' => [
+                                'none' => __('None', 'piper-privacy'),
+                                'tls' => __('TLS', 'piper-privacy'),
+                                'end_to_end' => __('End-to-End', 'piper-privacy'),
+                                'custom' => __('Custom', 'piper-privacy')
+                            ]
+                        ]
+                    ]
+                ],
+
+                // Privacy Analysis
+                'privacy_risks' => [
+                    'type' => 'repeater',
+                    'label' => __('Privacy Risks', 'piper-privacy'),
+                    'required' => true,
+                    'fields' => [
+                        'risk_description' => [
+                            'type' => 'textarea',
+                            'label' => __('Risk Description', 'piper-privacy')
+                        ],
+                        'likelihood' => [
+                            'type' => 'select',
+                            'label' => __('Likelihood', 'piper-privacy'),
+                            'options' => [
+                                'low' => __('Low', 'piper-privacy'),
+                                'medium' => __('Medium', 'piper-privacy'),
+                                'high' => __('High', 'piper-privacy')
+                            ]
+                        ],
+                        'impact' => [
+                            'type' => 'select',
+                            'label' => __('Impact', 'piper-privacy'),
+                            'options' => [
+                                'low' => __('Low', 'piper-privacy'),
+                                'medium' => __('Medium', 'piper-privacy'),
+                                'high' => __('High', 'piper-privacy')
+                            ]
+                        ]
+                    ]
+                ],
+                'mitigation_measures' => [
+                    'type' => 'repeater',
+                    'label' => __('Mitigation Measures', 'piper-privacy'),
+                    'required' => true,
+                    'fields' => [
+                        'measure' => [
+                            'type' => 'textarea',
+                            'label' => __('Mitigation Measure', 'piper-privacy')
+                        ],
+                        'implementation_status' => [
+                            'type' => 'select',
+                            'label' => __('Status', 'piper-privacy'),
+                            'options' => [
+                                'planned' => __('Planned', 'piper-privacy'),
+                                'in_progress' => __('In Progress', 'piper-privacy'),
+                                'implemented' => __('Implemented', 'piper-privacy'),
+                                'verified' => __('Verified', 'piper-privacy')
+                            ]
+                        ],
+                        'completion_date' => [
+                            'type' => 'date',
+                            'label' => __('Target Completion Date', 'piper-privacy')
+                        ]
+                    ]
+                ],
+
+                // Access Controls
+                'access_controls' => [
+                    'type' => 'repeater',
+                    'label' => __('Access Controls', 'piper-privacy'),
+                    'required' => true,
+                    'fields' => [
+                        'role' => [
+                            'type' => 'text',
+                            'label' => __('Role/Position', 'piper-privacy')
+                        ],
+                        'access_level' => [
+                            'type' => 'select',
+                            'label' => __('Access Level', 'piper-privacy'),
+                            'options' => [
+                                'read' => __('Read Only', 'piper-privacy'),
+                                'write' => __('Read/Write', 'piper-privacy'),
+                                'admin' => __('Administrative', 'piper-privacy')
+                            ]
+                        ],
+                        'justification' => [
+                            'type' => 'textarea',
+                            'label' => __('Access Justification', 'piper-privacy')
+                        ]
+                    ]
+                ],
+
+                // Data Management
+                'data_retention' => [
+                    'type' => 'group',
+                    'label' => __('Data Retention', 'piper-privacy'),
+                    'required' => true,
+                    'fields' => [
+                        'retention_period' => [
+                            'type' => 'text',
+                            'label' => __('Retention Period', 'piper-privacy')
+                        ],
+                        'retention_justification' => [
+                            'type' => 'textarea',
+                            'label' => __('Retention Justification', 'piper-privacy')
+                        ],
+                        'disposal_method' => [
+                            'type' => 'select',
+                            'label' => __('Disposal Method', 'piper-privacy'),
+                            'options' => [
+                                'deletion' => __('Secure Deletion', 'piper-privacy'),
+                                'archival' => __('Archival', 'piper-privacy'),
+                                'anonymization' => __('Anonymization', 'piper-privacy')
+                            ]
+                        ]
+                    ]
+                ]
+            ]
+        ];
+    }
+
+    /**
+     * Process form submission
+     */
+    protected function process_submission($entry_id, $form_data) {
+        // Validate form data
+        $validation = $this->validate_form_data($form_data);
+        if (is_wp_error($validation)) {
+            $this->handle_error($validation);
+            return;
+        }
+
+        // Sanitize form data
+        $sanitized_data = $this->sanitize_form_data($form_data);
+
+        // Get associated collection and PTA
+        $collection_id = absint($sanitized_data['collection_reference']);
+        $pta_id = absint($sanitized_data['pta_reference']);
+        
+        if (!$this->validate_references($collection_id, $pta_id)) {
+            return;
+        }
+
+        // Create post
+        $post_data = [
+            'title' => sprintf(
+                __('PIA: %s', 'piper-privacy'),
+                get_the_title($collection_id)
+            ),
+            'content' => $sanitized_data['system_description'],
+        ];
+
+        $post_id = $this->save_post('privacy-impact', $post_data);
+        if (is_wp_error($post_id)) {
+            $this->handle_error($post_id);
+            return;
+        }
+
+        // Save meta data
+        $meta_data = [
+            'collection_reference' => $collection_id,
+            'pta_reference' => $pta_id,
+            'system_description' => $sanitized_data['system_description'],
+            'data_flows' => $sanitized_data['data_flows'],
+            'privacy_risks' => $sanitized_data['privacy_risks'],
+            'mitigation_measures' => $sanitized_data['mitigation_measures'],
+            'access_controls' => $sanitized_data['access_controls'],
+            'data_retention' => $sanitized_data['data_retention'],
+            'pia_status' => 'draft'
+        ];
+
+        $this->save_meta_data($post_id, $meta_data);
+
+        // Trigger completion action
+        do_action('piper_privacy_pia_created', $post_id, $sanitized_data);
+    }
+
+    /**
+     * Validate references to collection and PTA
+     */
+    private function validate_references($collection_id, $pta_id) {
+        $collection = get_post($collection_id);
+        $pta = get_post($pta_id);
+
+        if (!$collection || $collection->post_type !== 'privacy-collection') {
+            $this->handle_error(new \WP_Error(
+                'invalid_collection',
+                __('Invalid privacy collection reference', 'piper-privacy')
+            ));
+            return false;
+        }
+
+        if (!$pta || $pta->post_type !== 'privacy-threshold') {
+            $this->handle_error(new \WP_Error(
+                'invalid_pta',
+                __('Invalid PTA reference', 'piper-privacy')
+            ));
+            return false;
+        }
+
+        return true;
+    }
+
+    /**
+     * Validate form data
+     */
+    protected function validate_form_data($data) {
+        $required_fields = [
+            'collection_reference',
+            'pta_reference',
+            'system_description',
+            'data_flows',
+            'privacy_risks',
+            'mitigation_measures',
+            'access_controls',
+            'data_retention'
+        ];
+        
+        foreach ($required_fields as $field) {
+            if (empty($data[$field])) {
+                return new \WP_Error(
+                    'missing_required_field',
+                    sprintf(__('Field %s is required', 'piper-privacy'), $field)
+                );
+            }
+        }
+
+        return true;
+    }
+
+    /**
+     * Get form settings
+     */
+    protected function get_form_settings() {
+        return [
+            'privacy_impact' => [
+                'title' => __('Privacy Impact Assessment Settings', 'piper-privacy'),
+                'fields' => [
+                    'review_required' => [
+                        'type' => 'switch',
+                        'label' => __('Require Review', 'piper-privacy'),
+                        'value' => 'yes',
+                    ],
+                    'reviewers' => [
+                        'type' => 'user_selection',
+                        'label' => __('Reviewers', 'piper-privacy'),
+                        'roles' => ['administrator', 'privacy_officer', 'legal_officer'],
+                        'multiple' => true
+                    ],
+                    'review_deadline' => [
+                        'type' => 'number',
+                        'label' => __('Review Deadline (days)', 'piper-privacy'),
+                        'value' => 14
+                    ],
+                    'auto_notifications' => [
+                        'type' => 'switch',
+                        'label' => __('Automatic Notifications', 'piper-privacy'),
+                        'value' => 'yes',
+                    ]
+                ],
+            ],
+        ];
+    }
+}

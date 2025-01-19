@@ -1,0 +1,133 @@
+/* Impact Assessment Admin Styles */
+
+.pp-assessment-container {
+    margin-top: 20px;
+}
+
+/* Form Styles */
+.pp-form {
+    max-width: 800px;
+    background: #fff;
+    padding: 20px;
+    border: 1px solid #ccd0d4;
+    box-shadow: 0 1px 1px rgba(0,0,0,.04);
+}
+
+.pp-form-row {
+    margin-bottom: 20px;
+}
+
+.pp-form-row label {
+    display: block;
+    margin-bottom: 5px;
+    font-weight: 600;
+}
+
+.pp-form-row input[type="text"],
+.pp-form-row input[type="date"],
+.pp-form-row select,
+.pp-form-row textarea {
+    width: 100%;
+}
+
+.pp-form-actions {
+    margin-top: 20px;
+    padding-top: 20px;
+    border-top: 1px solid #eee;
+}
+
+/* Status Styles */
+.pp-status {
+    display: inline-block;
+    padding: 3px 8px;
+    border-radius: 3px;
+    font-size: 12px;
+    font-weight: 500;
+}
+
+.pp-status-draft {
+    background: #e5e5e5;
+    color: #666;
+}
+
+.pp-status-pending {
+    background: #fef8ee;
+    color: #b75c00;
+}
+
+.pp-status-approved {
+    background: #edfaef;
+    color: #1a8b2d;
+}
+
+.pp-status-rejected {
+    background: #fef0f0;
+    color: #d63638;
+}
+
+/* Single Assessment View */
+.pp-assessment-single {
+    max-width: 800px;
+    background: #fff;
+    padding: 20px;
+    border: 1px solid #ccd0d4;
+    box-shadow: 0 1px 1px rgba(0,0,0,.04);
+}
+
+.pp-assessment-header {
+    margin-bottom: 20px;
+    padding-bottom: 20px;
+    border-bottom: 1px solid #eee;
+}
+
+.pp-assessment-meta {
+    margin-top: 10px;
+    color: #666;
+}
+
+.pp-assessment-meta > span {
+    margin-right: 15px;
+}
+
+.pp-section {
+    margin-bottom: 30px;
+}
+
+.pp-section h3 {
+    margin: 0 0 10px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid #eee;
+}
+
+.pp-section-content {
+    line-height: 1.5;
+}
+
+/* Revision History */
+.pp-revision-history {
+    margin-top: 30px;
+}
+
+.pp-revision-history table {
+    border-spacing: 0;
+}
+
+.pp-revision-history th {
+    text-align: left;
+}
+
+/* No Items */
+.pp-no-items {
+    padding: 20px;
+    background: #fff;
+    border: 1px solid #ccd0d4;
+    text-align: center;
+}
+
+/* Responsive */
+@media screen and (max-width: 782px) {
+    .pp-form,
+    .pp-assessment-single {
+        margin: 10px;
+    }
+}

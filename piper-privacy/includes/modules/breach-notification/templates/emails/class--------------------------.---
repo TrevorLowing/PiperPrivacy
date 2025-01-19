@@ -1,0 +1,149 @@
+<?php
+/**
+ * Legal Counsel Notification Email Template
+ *
+ * @package     PiperPrivacy
+ * @subpackage  Modules\BreachNotification\Templates\Emails
+ */
+
+// If this file is called directly, abort.
+if (!defined('WPINC')) {
+    die;
+}
+
+/**
+ * Get legal counsel notification template
+ *
+ * @param array $breach Breach data.
+ * @param array $counsel Legal counsel data.
+ * @return array Email template with subject and message.
+ */
+function pp_get_legal_counsel_notification_template($breach, $counsel) {
+    $site_name = get_bloginfo('name');
+    $site_url = get_bloginfo('url');
+    $admin_email = get_bloginfo('admin_email');
+
+    // Format detection date
+    $detection_date = wp_date(get_option('date_format') . ' ' . get_option('time_format'), strtotime($breach['detection_date']));
+
+    // Format affected data types
+    $affected_data = implode(', ', array_map('ucfirst', $breach['affected_data']));
+
+    // Count affected users
+    $affected_users_count = count($breach['affected_users']);
+
+    $subject = sprintf(
+        /* translators: 1: Site name, 2: Breach severity */
+        __('[Legal Review Required] %1$s - %2$s Data Breach Incident', 'piper-privacy'),
+        $site_name,
+        ucfirst($breach['severity'])
+    );
+
+    $message = sprintf(
+        /* translators: 1: Counsel name */
+        __('Dear %s,', 'piper-privacy'),
+        $counsel['name']
+    ) . "\n\n";
+
+    $message .= __('We are seeking legal counsel regarding a data breach incident that requires immediate review and guidance.', 'piper-privacy') . "\n\n";
+
+    $message .= __('Incident Summary:', 'piper-privacy') . "\n";
+    $message .= str_repeat('-', 50) . "\n";
+    $message .= sprintf(
+        /* translators: 1: Detection date, 2: Breach severity */
+        __("Detection Date: %1\$s\nSeverity Level: %2\$s\n", 'piper-privacy'),
+        $detection_date,
+        ucfirst($breach['severity'])
+    ) . "\n";
+    $message .= $breach['description'] . "\n\n";
+
+    $message .= __('Impact Analysis:', 'piper-privacy') . "\n";
+    $message .= str_repeat('-', 50) . "\n";
+    $message .= sprintf(
+        /* translators: 1: Affected data types, 2: Number of affected users */
+        __("Data Categories Affected: %1\$s\nNumber of Individuals Affected: %2\$d\n", 'piper-privacy'),
+        $affected_data,
+        $affected_users_count
+    ) . "\n";
+
+    $message .= __('Jurisdictional Considerations:', 'piper-privacy') . "\n";
+    $message .= str_repeat('-', 50) . "\n";
+    $message .= __("- GDPR applicability and compliance requirements
+- Local data protection laws and regulations
+- Cross-border data transfer implications
+- Industry-specific regulatory obligations
+- Contractual obligations with affected parties", 'piper-privacy') . "\n\n";
+
+    $message .= __('Current Status:', 'piper-privacy') . "\n";
+    $message .= str_repeat('-', 50) . "\n";
+    $message .= sprintf(
+        /* translators: 1: Breach status */
+        __("Incident Status: %s\n", 'piper-privacy'),
+        ucfirst($breach['status'])
+    );
+
+    if (!empty($breach['mitigation_steps'])) {
+        $message .= __("\nMitigation Steps Taken:\n", 'piper-privacy');
+        $message .= $breach['mitigation_steps'] . "\n";
+    }
+
+    $message .= "\n" . __('Legal Guidance Needed:', 'piper-privacy') . "\n";
+    $message .= str_repeat('-', 50) . "\n";
+    $message .= __("1. Assessment of notification obligations:
+   - Data protection authorities
+   - Affected individuals
+   - Other regulatory bodies
+
+2. Review of breach response actions:
+   - Adequacy of current measures
+   - Additional required steps
+   - Documentation requirements
+
+3. Risk assessment:
+   - Potential legal liabilities
+   - Regulatory compliance issues
+   - Contractual implications
+
+4. Communication strategy:
+   - Content review for notifications
+   - Timing requirements
+   - Documentation approach", 'piper-privacy') . "\n\n";
+
+    $message .= __('Documentation Available:', 'piper-privacy') . "\n";
+    $message .= str_repeat('-', 50) . "\n";
+    $message .= __("- Incident detection and response timeline
+- Technical investigation findings
+- Affected data inventory
+- Current mitigation measures
+- Draft notification templates
+- System logs and evidence", 'piper-privacy') . "\n\n";
+
+    $message .= __('Immediate Actions Requested:', 'piper-privacy') . "\n";
+    $message .= str_repeat('-', 50) . "\n";
+    $message .= __("1. Initial legal assessment of the incident
+2. Guidance on immediate compliance requirements
+3. Review of proposed notification strategy
+4. Recommendations for additional measures
+5. Timeline for required legal actions", 'piper-privacy') . "\n\n";
+
+    $message .= __('Contact Information:', 'piper-privacy') . "\n";
+    $message .= str_repeat('-', 50) . "\n";
+    $message .= sprintf(
+        /* translators: 1: Admin email */
+        __('Primary contact for this incident: %s', 'piper-privacy'),
+        $admin_email
+    ) . "\n\n";
+
+    $message .= __('This communication is privileged and confidential. Please maintain attorney-client privilege in all related communications.', 'piper-privacy') . "\n\n";
+
+    $message .= sprintf(
+        /* translators: 1: Site name */
+        __('Best regards,\n%s Management Team', 'piper-privacy'),
+        $site_name
+    );
+
+    return [
+        'subject' => $subject,
+        'message' => $message,
+    ];
+}

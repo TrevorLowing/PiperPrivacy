@@ -1,0 +1,78 @@
+<?php
+/**
+ * Admin page template for Consent Manager
+ *
+ * @package     PiperPrivacy
+ * @subpackage  Modules\ConsentManager
+ */
+
+// If this file is called directly, abort.
+if (!defined('WPINC')) {
+    die;
+}
+?>
+
+<div class="wrap">
+    <h1 class="wp-heading-inline"><?php esc_html_e('Consent Manager', 'piper-privacy'); ?></h1>
+    <a href="#" class="page-title-action" id="pp-new-consent-type"><?php esc_html_e('Add Consent Type', 'piper-privacy'); ?></a>
+    <hr class="wp-header-end">
+
+    <div class="pp-consent-container">
+        <!-- Consent Types -->
+        <div class="pp-consent-types">
+            <h2><?php esc_html_e('Consent Types', 'piper-privacy'); ?></h2>
+            <div id="pp-consent-types-list"></div>
+        </div>
+
+        <!-- Consent Records -->
+        <div class="pp-consent-records">
+            <h2><?php esc_html_e('Consent Records', 'piper-privacy'); ?></h2>
+            <div id="pp-consent-list"></div>
+        </div>
+
+        <!-- Consent Form -->
+        <div id="pp-consent-form" style="display: none;">
+            <?php $this->render_consent_form([]); ?>
+        </div>
+
+        <!-- Single Consent View -->
+        <div id="pp-consent-single" style="display: none;"></div>
+    </div>
+
+    <!-- Consent Type Modal -->
+    <div id="pp-consent-type-modal" class="pp-modal" style="display: none;">
+        <div class="pp-modal-content">
+            <span class="pp-modal-close">&times;</span>
+            <h2><?php esc_html_e('Add Consent Type', 'piper-privacy'); ?></h2>
+            <form id="pp-consent-type-form">
+                <div class="pp-form-row">
+                    <label for="consent_type_name"><?php esc_html_e('Name', 'piper-privacy'); ?></label>
+                    <input type="text" id="consent_type_name" name="name" required>
+                </div>
+
+                <div class="pp-form-row">
+                    <label for="consent_type_description"><?php esc_html_e('Description', 'piper-privacy'); ?></label>
+                    <textarea id="consent_type_description" name="description" rows="4"></textarea>
+                </div>
+
+                <div class="pp-form-row">
+                    <label for="consent_type_expiry"><?php esc_html_e('Expiry (days)', 'piper-privacy'); ?></label>
+                    <input type="number" id="consent_type_expiry" name="expiry" min="0">
+                    <p class="description"><?php esc_html_e('Leave empty for no expiry', 'piper-privacy'); ?></p>
+                </div>
+
+                <div class="pp-form-row">
+                    <label>
+                        <input type="checkbox" name="required" value="1">
+                        <?php esc_html_e('Required Consent', 'piper-privacy'); ?>
+                    </label>
+                </div>
+
+                <div class="pp-form-actions">
+                    <button type="submit" class="button button-primary"><?php esc_html_e('Save Consent Type', 'piper-privacy'); ?></button>
+                    <button type="button" class="button pp-modal-cancel"><?php esc_html_e('Cancel', 'piper-privacy'); ?></button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>

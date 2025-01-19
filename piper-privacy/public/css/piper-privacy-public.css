@@ -1,0 +1,23 @@
+/* Public-facing styles */
+.piper-privacy-notice {
+    padding: 15px;
+    margin: 15px 0;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    background-color: #f9f9f9;
+}
+
+.piper-privacy-notice.warning {
+    border-color: #f0ad4e;
+    background-color: #fcf8e3;
+}
+
+.piper-privacy-notice.error {
+    border-color: #d9534f;
+    background-color: #f2dede;
+}
+
+.piper-privacy-notice.success {
+    border-color: #5cb85c;
+    background-color: #dff0d8;
+}

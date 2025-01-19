@@ -1,0 +1,223 @@
+// Security Verification Steps
+@layer verification-steps {
+    // Nonce Verification
+    @keyframes nonce-check {
+        0% {
+            background: transparent;
+            border-color: var(--color-border);
+        }
+        30% {
+            background: rgba(59, 130, 246, 0.1);
+            border-color: rgb(59, 130, 246);
+        }
+        100% {
+            background: transparent;
+            border-color: rgb(34, 197, 94);
+        }
+    }
+
+    // Input Sanitization
+    @keyframes sanitize-input {
+        0% {
+            clip-path: inset(0 0 0 0);
+        }
+        50% {
+            clip-path: inset(0 50% 0 0);
+        }
+        100% {
+            clip-path: inset(0 0 0 0);
+        }
+    }
+
+    // Output Escaping
+    @keyframes escape-output {
+        0% {
+            transform: translateX(0);
+            opacity: 1;
+        }
+        50% {
+            transform: translateX(10px);
+            opacity: 0.5;
+        }
+        100% {
+            transform: translateX(0);
+            opacity: 1;
+        }
+    }
+
+    // SQL Protection
+    @keyframes sql-prepare {
+        0% {
+            border-color: var(--color-border);
+            background: transparent;
+        }
+        50% {
+            border-color: rgb(236, 72, 153);
+            background: rgba(236, 72, 153, 0.1);
+        }
+        100% {
+            border-color: rgb(34, 197, 94);
+            background: transparent;
+        }
+    }
+
+    // Encryption Process
+    @keyframes encrypt-data {
+        0% {
+            background-position: -200% 0;
+        }
+        100% {
+            background-position: 300% 0;
+        }
+    }
+
+    // File Handling
+    @keyframes secure-file {
+        0% {
+            transform: scale(1);
+            box-shadow: 0 0 0 0 rgba(59, 130, 246, 0);
+        }
+        50% {
+            transform: scale(1.02);
+            box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.2);
+        }
+        100% {
+            transform: scale(1);
+            box-shadow: 0 0 0 0 rgba(59, 130, 246, 0);
+        }
+    }
+
+    // Apply to Elements
+    .verify-nonce {
+        animation: nonce-check 1s var(--ease-out);
+    }
+
+    .sanitize-input {
+        animation: sanitize-input 0.5s var(--ease-out);
+    }
+
+    .escape-output {
+        animation: escape-output 0.3s var(--ease-out);
+    }
+
+    .prepare-sql {
+        animation: sql-prepare 0.8s var(--ease-out);
+    }
+
+    .encrypt-data {
+        background: linear-gradient(
+            90deg,
+            transparent,
+            rgba(34, 197, 94, 0.2),
+            transparent
+        );
+        background-size: 200% 100%;
+        animation: encrypt-data 1.5s linear infinite;
+    }
+
+    .secure-file {
+        animation: secure-file 1s var(--ease-bounce);
+    }
+
+    // Security Steps Container
+    .security-steps {
+        display: flex;
+        flex-direction: column;
+        gap: 1rem;
+    }
+
+    // Step Indicators
+    .security-step {
+        position: relative;
+        padding-left: 2.5rem;
+        opacity: 0;
+        transform: translateY(10px);
+    }
+
+    .security-step-active {
+        opacity: 1;
+        transform: translateY(0);
+        transition: opacity 0.3s, transform 0.3s;
+    }
+
+    .security-step::before {
+        content: '';
+        position: absolute;
+        left: 0;
+        top: 50%;
+        width: 1.5rem;
+        height: 1.5rem;
+        border-radius: 50%;
+        border: 2px solid var(--step-color, #e5e7eb);
+        transform: translateY(-50%);
+    }
+
+    .security-step-complete::before {
+        background: var(--step-color, rgb(34, 197, 94));
+        border-color: var(--step-color, rgb(34, 197, 94));
+    }
+
+    // Step Colors
+    .step-nonce {
+        --step-color: rgb(59, 130, 246);
+    }
+
+    .step-sanitize {
+        --step-color: rgb(234, 179, 8);
+    }
+
+    .step-escape {
+        --step-color: rgb(236, 72, 153);
+    }
+
+    .step-sql {
+        --step-color: rgb(168, 85, 247);
+    }
+
+    .step-encrypt {
+        --step-color: rgb(34, 197, 94);
+    }
+
+    .step-file {
+        --step-color: rgb(59, 130, 246);
+    }
+
+    // Progress Line
+    .security-progress {
+        position: absolute;
+        left: 0.75rem;
+        top: 1.5rem;
+        bottom: 0;
+        width: 2px;
+        background: #e5e7eb;
+        transform-origin: top;
+    }
+
+    .security-progress-active {
+        background: var(--step-color, rgb(34, 197, 94));
+        animation: progress-fill 0.3s var(--ease-out);
+    }
+
+    @keyframes progress-fill {
+        from {
+            transform: scaleY(0);
+        }
+        to {
+            transform: scaleY(1);
+        }
+    }
+
+    // Status Messages
+    .status-message {
+        font-size: 0.875rem;
+        color: var(--step-color, #6b7280);
+        opacity: 0;
+        transform: translateX(-10px);
+    }
+
+    .status-message-active {
+        opacity: 1;
+        transform: translateX(0);
+        transition: opacity 0.3s, transform 0.3s;
+    }
+}

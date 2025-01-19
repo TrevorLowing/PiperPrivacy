@@ -1,0 +1,142 @@
+<?php
+/**
+ * Insurance Provider Notification Email Template
+ *
+ * @package     PiperPrivacy
+ * @subpackage  Modules\BreachNotification\Templates\Emails
+ */
+
+// If this file is called directly, abort.
+if (!defined('WPINC')) {
+    die;
+}
+
+/**
+ * Get insurance provider notification template
+ *
+ * @param array $breach Breach data.
+ * @param array $insurance Insurance provider data.
+ * @return array Email template with subject and message.
+ */
+function pp_get_insurance_notification_template($breach, $insurance) {
+    $site_name = get_bloginfo('name');
+    $site_url = get_bloginfo('url');
+    $admin_email = get_bloginfo('admin_email');
+
+    // Format detection date
+    $detection_date = wp_date(get_option('date_format') . ' ' . get_option('time_format'), strtotime($breach['detection_date']));
+
+    // Format affected data types
+    $affected_data = implode(', ', array_map('ucfirst', $breach['affected_data']));
+
+    // Count affected users
+    $affected_users_count = count($breach['affected_users']);
+
+    $subject = sprintf(
+        /* translators: 1: Policy number, 2: Site name */
+        __('[Cyber Insurance Claim Notice] Policy #%1$s - %2$s Data Breach', 'piper-privacy'),
+        $insurance['policy_number'],
+        $site_name
+    );
+
+    $message = sprintf(
+        /* translators: 1: Insurance provider name */
+        __('Dear %s,', 'piper-privacy'),
+        $insurance['name']
+    ) . "\n\n";
+
+    $message .= sprintf(
+        /* translators: 1: Policy number */
+        __('We are writing to notify you of a data security incident and initiate a claim under Policy #%s.', 'piper-privacy'),
+        $insurance['policy_number']
+    ) . "\n\n";
+
+    $message .= __('Initial Incident Report:', 'piper-privacy') . "\n";
+    $message .= str_repeat('-', 50) . "\n";
+    $message .= sprintf(
+        /* translators: 1: Detection date, 2: Breach severity */
+        __("Date of Discovery: %1\$s\nIncident Severity: %2\$s\n", 'piper-privacy'),
+        $detection_date,
+        ucfirst($breach['severity'])
+    ) . "\n";
+    $message .= $breach['description'] . "\n\n";
+
+    $message .= __('Impact Assessment:', 'piper-privacy') . "\n";
+    $message .= str_repeat('-', 50) . "\n";
+    $message .= sprintf(
+        /* translators: 1: Affected data types, 2: Number of affected users */
+        __("Types of Data Compromised: %1\$s\nNumber of Records Affected: %2\$d\n", 'piper-privacy'),
+        $affected_data,
+        $affected_users_count
+    ) . "\n";
+
+    if (!empty($breach['mitigation_steps'])) {
+        $message .= __('Immediate Response Actions:', 'piper-privacy') . "\n";
+        $message .= str_repeat('-', 50) . "\n";
+        $message .= $breach['mitigation_steps'] . "\n\n";
+    }
+
+    $message .= __('Potential Costs and Liabilities:', 'piper-privacy') . "\n";
+    $message .= str_repeat('-', 50) . "\n";
+    $message .= __("1. Forensic Investigation
+2. Legal and Compliance Costs
+3. Notification Expenses
+4. Credit Monitoring Services
+5. Public Relations Management
+6. Business Interruption
+7. Potential Legal Claims", 'piper-privacy') . "\n\n";
+
+    $message .= __('Current Status and Next Steps:', 'piper-privacy') . "\n";
+    $message .= str_repeat('-', 50) . "\n";
+    $message .= sprintf(
+        /* translators: 1: Breach status */
+        __("Current Status: %s\n\n", 'piper-privacy'),
+        ucfirst($breach['status'])
+    );
+    $message .= __("Planned Actions:
+1. Complete forensic investigation
+2. Implement additional security measures
+3. Notify affected individuals
+4. Engage with regulators
+5. Monitor for suspicious activity", 'piper-privacy') . "\n\n";
+
+    $message .= __('Required Documentation:', 'piper-privacy') . "\n";
+    $message .= str_repeat('-', 50) . "\n";
+    $message .= __("We can provide the following upon request:
+- Detailed incident timeline
+- System logs and evidence
+- Security assessment reports
+- Response team documentation
+- Cost estimates and invoices
+- Communication records", 'piper-privacy') . "\n\n";
+
+    $message .= __('Insurance Coverage Requirements:', 'piper-privacy') . "\n";
+    $message .= str_repeat('-', 50) . "\n";
+    $message .= __("Please advise on:
+1. Claim filing requirements
+2. Coverage verification
+3. Approved service providers
+4. Cost approval process
+5. Reporting requirements", 'piper-privacy') . "\n\n";
+
+    $message .= __('Contact Information:', 'piper-privacy') . "\n";
+    $message .= str_repeat('-', 50) . "\n";
+    $message .= sprintf(
+        /* translators: 1: Admin email */
+        __('Primary Contact: %s', 'piper-privacy'),
+        $admin_email
+    ) . "\n\n";
+
+    $message .= __('We request your immediate attention to this matter and guidance on next steps regarding our coverage and claim process.', 'piper-privacy') . "\n\n";
+
+    $message .= sprintf(
+        /* translators: 1: Site name */
+        __('Best regards,\n%s Management Team', 'piper-privacy'),
+        $site_name
+    );
+
+    return [
+        'subject' => $subject,
+        'message' => $message,
+    ];
+}
