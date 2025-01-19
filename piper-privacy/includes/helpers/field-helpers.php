@@ -1,81 +1,255 @@
 <?php
+namespace PiperPrivacy\Includes\Helpers;
+
 /**
- * Field Helper Functions
- * 
- * @package PiperPrivacy
- * @subpackage PiperPrivacy/includes/helpers
+ * Field helper functions for managing custom fields
+ * Supports both MetaBox and ACF during transition
  */
 
-if (!defined('WPINC')) {
-    die;
-}
-
 /**
- * Get field value
+ * Get a field value
  *
- * @param string $field_name Field name
- * @param int    $post_id    Post ID (optional)
+ * @param string $field_name Field name/key
+ * @param int|null $post_id Post ID (optional)
  * @return mixed Field value
  */
 function pp_get_field($field_name, $post_id = null) {
+    // Get post ID if not provided
     if (!$post_id) {
         $post_id = get_the_ID();
     }
-    return rwmb_meta($field_name, ['object_type' => 'post'], $post_id);
+
+    // Try MetaBox first
+    if (function_exists('rwmb_meta')) {
+        $value = rwmb_meta($field_name, '', $post_id);
+        if ($value !== '') {
+            return $value;
+        }
+    }
+
+    // Fallback to ACF
+    if (function_exists('get_field')) {
+        return get_field($field_name, $post_id);
+    }
+
+    // Last resort: get post meta
+    return get_post_meta($post_id, $field_name, true);
 }
 
 /**
- * Update field value
+ * Update a field value
  *
- * @param string $field_name Field name
- * @param mixed  $value      Field value
- * @param int    $post_id    Post ID (optional)
- * @return bool|int Meta ID if the key didn't exist, true on successful update, false on failure
+ * @param string $field_name Field name/key
+ * @param mixed $value Field value
+ * @param int|null $post_id Post ID (optional)
+ * @return bool Success status
  */
 function pp_update_field($field_name, $value, $post_id = null) {
+    // Get post ID if not provided
     if (!$post_id) {
         $post_id = get_the_ID();
     }
+
+    // Try MetaBox first
+    if (function_exists('rwmb_meta')) {
+        return rwmb_meta_update($field_name, $value, $post_id);
+    }
+
+    // Fallback to ACF
+    if (function_exists('update_field')) {
+        return update_field($field_name, $value, $post_id);
+    }
+
+    // Last resort: update post meta
     return update_post_meta($post_id, $field_name, $value);
 }
 
 /**
- * Get group field value
+ * Display a field value
  *
- * @param string $field_name Field name
- * @param int    $post_id    Post ID (optional)
- * @return array Field values
- */
-function pp_get_group_field($field_name, $post_id = null) {
-    if (!$post_id) {
-        $post_id = get_the_ID();
-    }
-    return rwmb_meta($field_name, ['object_type' => 'post'], $post_id) ?: [];
-}
-
-/**
- * Display field value
- *
- * @param string $field_name Field name
- * @param int    $post_id    Post ID (optional)
+ * @param string $field_name Field name/key
+ * @param int|null $post_id Post ID (optional)
  */
 function pp_the_field($field_name, $post_id = null) {
     echo pp_get_field($field_name, $post_id);
 }
 
 /**
+ * Get field settings
+ *
+ * @param string $field_name Field name/key
+ * @return array Field settings
+ */
+function pp_get_field_settings($field_name) {
+    // Try MetaBox first
+    if (function_exists('rwmb_get_field_settings')) {
+        $settings = rwmb_get_field_settings($field_name);
+        if ($settings) {
+            return $settings;
+        }
+    }
+
+    // Fallback to ACF
+    if (function_exists('get_field_object')) {
+        $field = get_field_object($field_name);
+        if ($field) {
+            return [
+                'type' => $field['type'],
+                'name' => $field['label'],
+                'id' => $field['name'],
+                'options' => $field['choices'] ?? [],
+                'required' => $field['required'] ?? false,
+                'desc' => $field['instructions'] ?? '',
+                'default' => $field['default_value'] ?? '',
+            ];
+        }
+    }
+
+    return [];
+}
+
+/**
+ * Get field choices/options
+ *
+ * @param string $field_name Field name/key
+ * @return array Field choices
+ */
+function pp_get_field_choices($field_name) {
+    $settings = pp_get_field_settings($field_name);
+    return $settings['options'] ?? [];
+}
+
+/**
+ * Check if a field exists
+ *
+ * @param string $field_name Field name/key
+ * @param int|null $post_id Post ID (optional)
+ * @return bool Whether the field exists
+ */
+function pp_field_exists($field_name, $post_id = null) {
+    // Try MetaBox
+    if (function_exists('rwmb_meta')) {
+        return rwmb_get_field_settings($field_name) !== null;
+    }
+
+    // Try ACF
+    if (function_exists('get_field_object')) {
+        return get_field_object($field_name, $post_id) !== null;
+    }
+
+    return false;
+}
+
+/**
+ * Get all fields for a post
+ *
+ * @param int|null $post_id Post ID (optional)
+ * @return array All field values
+ */
+function pp_get_fields($post_id = null) {
+    if (!$post_id) {
+        $post_id = get_the_ID();
+    }
+
+    // Try MetaBox first
+    if (function_exists('rwmb_meta')) {
+        $meta = rwmb_meta_all($post_id);
+        if (!empty($meta)) {
+            return $meta;
+        }
+    }
+
+    // Fallback to ACF
+    if (function_exists('get_fields')) {
+        return get_fields($post_id) ?: [];
+    }
+
+    // Last resort: get all post meta
+    return get_post_meta($post_id);
+}
+
+/**
+ * Validate field value
+ *
+ * @param string $field_name Field name/key
+ * @param mixed $value Value to validate
+ * @return bool|WP_Error True if valid, WP_Error if invalid
+ */
+function pp_validate_field($field_name, $value) {
+    $settings = pp_get_field_settings($field_name);
+    
+    if (empty($settings)) {
+        return true;
+    }
+
+    // Required check
+    if (!empty($settings['required']) && empty($value)) {
+        return new \WP_Error(
+            'required_field',
+            sprintf(__('Field %s is required', 'piper-privacy'), $settings['name'])
+        );
+    }
+
+    // Type validation
+    switch ($settings['type']) {
+        case 'email':
+            if (!is_email($value)) {
+                return new \WP_Error(
+                    'invalid_email',
+                    __('Invalid email address', 'piper-privacy')
+                );
+            }
+            break;
+
+        case 'number':
+            if (!is_numeric($value)) {
+                return new \WP_Error(
+                    'invalid_number',
+                    __('Value must be a number', 'piper-privacy')
+                );
+            }
+            break;
+
+        case 'url':
+            if (!filter_var($value, FILTER_VALIDATE_URL)) {
+                return new \WP_Error(
+                    'invalid_url',
+                    __('Invalid URL', 'piper-privacy')
+                );
+            }
+            break;
+    }
+
+    return true;
+}
+
+/**
+ * Get group field value
+ *
+ * @param string $field_name Field name
+ * @param int|null $post_id Post ID (optional)
+ * @return array Field values
+ */
+function pp_get_group_field($field_name, $post_id = null) {
+    if (!$post_id) {
+        $post_id = get_the_ID();
+    }
+    return pp_get_field($field_name, $post_id) ?: [];
+}
+
+/**
  * Get select field value with label
  *
  * @param string $field_name Field name
- * @param int    $post_id    Post ID (optional)
+ * @param int|null $post_id Post ID (optional)
  * @return array Array with 'value' and 'label' keys
  */
 function pp_get_select_field($field_name, $post_id = null) {
     if (!$post_id) {
         $post_id = get_the_ID();
     }
-    $value = rwmb_meta($field_name, ['object_type' => 'post'], $post_id);
-    $field = rwmb_get_field_settings($field_name);
+    $value = pp_get_field($field_name, $post_id);
+    $field = pp_get_field_settings($field_name);
     
     return [
         'value' => $value,
@@ -87,19 +261,19 @@ function pp_get_select_field($field_name, $post_id = null) {
  * Get checkbox list values with labels
  *
  * @param string $field_name Field name
- * @param int    $post_id    Post ID (optional)
+ * @param int|null $post_id Post ID (optional)
  * @return array Array of selected values with their labels
  */
 function pp_get_checkbox_list($field_name, $post_id = null) {
     if (!$post_id) {
         $post_id = get_the_ID();
     }
-    $values = rwmb_meta($field_name, ['object_type' => 'post'], $post_id);
+    $values = pp_get_field($field_name, $post_id);
     if (!is_array($values)) {
         return [];
     }
     
-    $field = rwmb_get_field_settings($field_name);
+    $field = pp_get_field_settings($field_name);
     $result = [];
     
     foreach ($values as $value) {
@@ -116,37 +290,37 @@ function pp_get_checkbox_list($field_name, $post_id = null) {
  * Get file field value with full information
  *
  * @param string $field_name Field name
- * @param int    $post_id    Post ID (optional)
+ * @param int|null $post_id Post ID (optional)
  * @return array File information including URL, path, and metadata
  */
 function pp_get_file_field($field_name, $post_id = null) {
     if (!$post_id) {
         $post_id = get_the_ID();
     }
-    return rwmb_meta($field_name, ['object_type' => 'post'], $post_id);
+    return pp_get_field($field_name, $post_id);
 }
 
 /**
  * Get image field with specified size
  *
  * @param string $field_name Field name
- * @param string $size       Image size (thumbnail, medium, large, full)
- * @param int    $post_id    Post ID (optional)
+ * @param string $size Image size (thumbnail, medium, large, full)
+ * @param int|null $post_id Post ID (optional)
  * @return array Image information including URL and metadata
  */
 function pp_get_image_field($field_name, $size = 'thumbnail', $post_id = null) {
     if (!$post_id) {
         $post_id = get_the_ID();
     }
-    return rwmb_meta($field_name, ['size' => $size, 'object_type' => 'post'], $post_id);
+    return pp_get_field($field_name, $post_id);
 }
 
 /**
  * Get date field in specified format
  *
  * @param string $field_name Field name
- * @param string $format     Date format (default WordPress date format if not specified)
- * @param int    $post_id    Post ID (optional)
+ * @param string $format Date format (default WordPress date format if not specified)
+ * @param int|null $post_id Post ID (optional)
  * @return string Formatted date
  */
 function pp_get_date_field($field_name, $format = '', $post_id = null) {
@@ -156,7 +330,7 @@ function pp_get_date_field($field_name, $format = '', $post_id = null) {
     if (empty($format)) {
         $format = get_option('date_format');
     }
-    $value = rwmb_meta($field_name, ['object_type' => 'post'], $post_id);
+    $value = pp_get_field($field_name, $post_id);
     return $value ? date($format, strtotime($value)) : '';
 }
 
@@ -164,14 +338,14 @@ function pp_get_date_field($field_name, $format = '', $post_id = null) {
  * Get WYSIWYG field with formatting
  *
  * @param string $field_name Field name
- * @param int    $post_id    Post ID (optional)
+ * @param int|null $post_id Post ID (optional)
  * @return string Formatted HTML content
  */
 function pp_get_wysiwyg_field($field_name, $post_id = null) {
     if (!$post_id) {
         $post_id = get_the_ID();
     }
-    $content = rwmb_meta($field_name, ['object_type' => 'post'], $post_id);
+    $content = pp_get_field($field_name, $post_id);
     return wpautop($content);
 }
 
@@ -179,21 +353,21 @@ function pp_get_wysiwyg_field($field_name, $post_id = null) {
  * Check if a checkbox field is checked
  *
  * @param string $field_name Field name
- * @param int    $post_id    Post ID (optional)
+ * @param int|null $post_id Post ID (optional)
  * @return bool True if checked, false otherwise
  */
 function pp_is_checked($field_name, $post_id = null) {
     if (!$post_id) {
         $post_id = get_the_ID();
     }
-    return (bool) rwmb_meta($field_name, ['object_type' => 'post'], $post_id);
+    return (bool) pp_get_field($field_name, $post_id);
 }
 
 /**
  * Get group field count
  *
  * @param string $field_name Field name
- * @param int    $post_id    Post ID (optional)
+ * @param int|null $post_id Post ID (optional)
  * @return int Number of items in the group
  */
 function pp_get_group_count($field_name, $post_id = null) {
@@ -205,14 +379,14 @@ function pp_get_group_count($field_name, $post_id = null) {
  * Get formatted address from address field
  *
  * @param string $field_name Field name
- * @param int    $post_id    Post ID (optional)
+ * @param int|null $post_id Post ID (optional)
  * @return string Formatted address
  */
 function pp_get_address_field($field_name, $post_id = null) {
     if (!$post_id) {
         $post_id = get_the_ID();
     }
-    $address = rwmb_meta($field_name, ['object_type' => 'post'], $post_id);
+    $address = pp_get_field($field_name, $post_id);
     if (!is_array($address)) {
         return '';
     }
@@ -231,15 +405,15 @@ function pp_get_address_field($field_name, $post_id = null) {
  * Get user field with specific information
  *
  * @param string $field_name Field name
- * @param string $info       User information to return (display_name, email, etc.)
- * @param int    $post_id    Post ID (optional)
+ * @param string $info User information to return (display_name, email, etc.)
+ * @param int|null $post_id Post ID (optional)
  * @return mixed User information
  */
 function pp_get_user_field($field_name, $info = 'display_name', $post_id = null) {
     if (!$post_id) {
         $post_id = get_the_ID();
     }
-    $user_id = rwmb_meta($field_name, ['object_type' => 'post'], $post_id);
+    $user_id = pp_get_field($field_name, $post_id);
     if (!$user_id) {
         return '';
     }
@@ -252,14 +426,14 @@ function pp_get_user_field($field_name, $info = 'display_name', $post_id = null)
  * Get taxonomy field values with full term information
  *
  * @param string $field_name Field name
- * @param int    $post_id    Post ID (optional)
+ * @param int|null $post_id Post ID (optional)
  * @return array Array of term objects
  */
 function pp_get_taxonomy_field($field_name, $post_id = null) {
     if (!$post_id) {
         $post_id = get_the_ID();
     }
-    $terms = rwmb_meta($field_name, ['object_type' => 'post'], $post_id);
+    $terms = pp_get_field($field_name, $post_id);
     if (!is_array($terms)) {
         return [];
     }
@@ -279,14 +453,14 @@ function pp_get_taxonomy_field($field_name, $post_id = null) {
  * Get color field with RGB and hex values
  *
  * @param string $field_name Field name
- * @param int    $post_id    Post ID (optional)
+ * @param int|null $post_id Post ID (optional)
  * @return array Color information
  */
 function pp_get_color_field($field_name, $post_id = null) {
     if (!$post_id) {
         $post_id = get_the_ID();
     }
-    $color = rwmb_meta($field_name, ['object_type' => 'post'], $post_id);
+    $color = pp_get_field($field_name, $post_id);
     if (empty($color)) {
         return null;
     }
@@ -313,14 +487,14 @@ function pp_get_color_field($field_name, $post_id = null) {
  * Get map field with formatted coordinates
  *
  * @param string $field_name Field name
- * @param int    $post_id    Post ID (optional)
+ * @param int|null $post_id Post ID (optional)
  * @return array Map coordinates and location info
  */
 function pp_get_map_field($field_name, $post_id = null) {
     if (!$post_id) {
         $post_id = get_the_ID();
     }
-    $location = rwmb_meta($field_name, ['object_type' => 'post'], $post_id);
+    $location = pp_get_field($field_name, $post_id);
     if (!is_array($location)) {
         return null;
     }
@@ -342,7 +516,7 @@ function pp_get_map_field($field_name, $post_id = null) {
  * Get key-value field as associative array
  *
  * @param string $field_name Field name
- * @param int    $post_id    Post ID (optional)
+ * @param int|null $post_id Post ID (optional)
  * @return array Associative array of key-value pairs
  */
 function pp_get_key_value_field($field_name, $post_id = null) {
@@ -367,20 +541,20 @@ function pp_get_key_value_field($field_name, $post_id = null) {
  * Get range field with min and max values
  *
  * @param string $field_name Field name
- * @param int    $post_id    Post ID (optional)
+ * @param int|null $post_id Post ID (optional)
  * @return array Range information
  */
 function pp_get_range_field($field_name, $post_id = null) {
     if (!$post_id) {
         $post_id = get_the_ID();
     }
-    $value = rwmb_meta($field_name, ['object_type' => 'post'], $post_id);
+    $value = pp_get_field($field_name, $post_id);
     
     return [
         'value' => $value,
-        'min' => rwmb_get_field_settings($field_name)['min'] ?? 0,
-        'max' => rwmb_get_field_settings($field_name)['max'] ?? 100,
-        'step' => rwmb_get_field_settings($field_name)['step'] ?? 1
+        'min' => pp_get_field_settings($field_name)['min'] ?? 0,
+        'max' => pp_get_field_settings($field_name)['max'] ?? 100,
+        'step' => pp_get_field_settings($field_name)['step'] ?? 1
     ];
 }
 
@@ -388,8 +562,8 @@ function pp_get_range_field($field_name, $post_id = null) {
  * Get time field in specified format
  *
  * @param string $field_name Field name
- * @param string $format     Time format (default WordPress time format if not specified)
- * @param int    $post_id    Post ID (optional)
+ * @param string $format Time format (default WordPress time format if not specified)
+ * @param int|null $post_id Post ID (optional)
  * @return string Formatted time
  */
 function pp_get_time_field($field_name, $format = '', $post_id = null) {
@@ -399,7 +573,7 @@ function pp_get_time_field($field_name, $format = '', $post_id = null) {
     if (empty($format)) {
         $format = get_option('time_format');
     }
-    $value = rwmb_meta($field_name, ['object_type' => 'post'], $post_id);
+    $value = pp_get_field($field_name, $post_id);
     return $value ? date($format, strtotime($value)) : '';
 }
 
@@ -407,15 +581,15 @@ function pp_get_time_field($field_name, $format = '', $post_id = null) {
  * Get post field with specific post information
  *
  * @param string $field_name Field name
- * @param array  $fields     Post fields to return (default: ID, title, permalink)
- * @param int    $post_id    Post ID (optional)
+ * @param array $fields Post fields to return (default: ID, title, permalink)
+ * @param int|null $post_id Post ID (optional)
  * @return array Post information
  */
 function pp_get_post_field($field_name, $fields = [], $post_id = null) {
     if (!$post_id) {
         $post_id = get_the_ID();
     }
-    $related_post = rwmb_meta($field_name, ['object_type' => 'post'], $post_id);
+    $related_post = pp_get_field($field_name, $post_id);
     if (!$related_post) {
         return null;
     }
@@ -444,15 +618,15 @@ function pp_get_post_field($field_name, $fields = [], $post_id = null) {
  * Get switch field value with custom states
  *
  * @param string $field_name Field name
- * @param int    $post_id    Post ID (optional)
+ * @param int|null $post_id Post ID (optional)
  * @return array Switch state information
  */
 function pp_get_switch_field($field_name, $post_id = null) {
     if (!$post_id) {
         $post_id = get_the_ID();
     }
-    $value = rwmb_meta($field_name, ['object_type' => 'post'], $post_id);
-    $field = rwmb_get_field_settings($field_name);
+    $value = pp_get_field($field_name, $post_id);
+    $field = pp_get_field_settings($field_name);
     
     return [
         'value' => $value,
@@ -460,40 +634,6 @@ function pp_get_switch_field($field_name, $post_id = null) {
         'label' => $value ? 
             ($field['label_on'] ?? 'On') : 
             ($field['label_off'] ?? 'Off')
-    ];
-}
-
-/**
- * Get field choices for select, radio, or checkbox_list fields
- *
- * @param string $field_name Field name
- * @return array Array of available choices
- */
-function pp_get_field_choices($field_name) {
-    $field = rwmb_get_field_settings($field_name);
-    return $field['options'] ?? [];
-}
-
-/**
- * Get formatted currency field
- *
- * @param string $field_name Field name
- * @param string $currency   Currency code (default: USD)
- * @param int    $post_id    Post ID (optional)
- * @return array Currency information
- */
-function pp_get_currency_field($field_name, $currency = 'USD', $post_id = null) {
-    if (!$post_id) {
-        $post_id = get_the_ID();
-    }
-    $value = rwmb_meta($field_name, ['object_type' => 'post'], $post_id);
-    
-    return [
-        'raw' => $value,
-        'formatted' => number_format($value, 2),
-        'currency' => $currency,
-        'symbol' => get_currency_symbol($currency),
-        'display' => get_currency_symbol($currency) . number_format($value, 2)
     ];
 }
 
@@ -512,4 +652,27 @@ function get_currency_symbol($currency) {
         // Add more as needed
     ];
     return $symbols[$currency] ?? $currency;
+}
+
+/**
+ * Get formatted currency field
+ *
+ * @param string $field_name Field name
+ * @param string $currency Currency code (default: USD)
+ * @param int|null $post_id Post ID (optional)
+ * @return array Currency information
+ */
+function pp_get_currency_field($field_name, $currency = 'USD', $post_id = null) {
+    if (!$post_id) {
+        $post_id = get_the_ID();
+    }
+    $value = pp_get_field($field_name, $post_id);
+    
+    return [
+        'raw' => $value,
+        'formatted' => number_format($value, 2),
+        'currency' => $currency,
+        'symbol' => get_currency_symbol($currency),
+        'display' => get_currency_symbol($currency) . number_format($value, 2)
+    ];
 }
