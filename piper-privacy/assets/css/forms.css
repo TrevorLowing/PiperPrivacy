@@ -1,0 +1,240 @@
+/* Form Styles */
+.rwmb-form {
+    max-width: 800px;
+    margin: 2rem auto;
+    padding: 2rem;
+    background: #fff;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    border-radius: 4px;
+}
+
+.rwmb-form .rwmb-field {
+    margin-bottom: 1.5rem;
+}
+
+.rwmb-form .rwmb-label {
+    display: block;
+    margin-bottom: 0.5rem;
+    font-weight: 600;
+    color: #2c3338;
+}
+
+.rwmb-form .rwmb-required {
+    color: #d63638;
+}
+
+.rwmb-form .rwmb-input {
+    width: 100%;
+}
+
+.rwmb-form input[type="text"],
+.rwmb-form input[type="email"],
+.rwmb-form input[type="url"],
+.rwmb-form input[type="tel"],
+.rwmb-form input[type="number"],
+.rwmb-form textarea,
+.rwmb-form select {
+    width: 100%;
+    padding: 0.5rem;
+    border: 1px solid #8c8f94;
+    border-radius: 4px;
+    background-color: #fff;
+    color: #2c3338;
+}
+
+.rwmb-form input[type="text"]:focus,
+.rwmb-form input[type="email"]:focus,
+.rwmb-form input[type="url"]:focus,
+.rwmb-form input[type="tel"]:focus,
+.rwmb-form input[type="number"]:focus,
+.rwmb-form textarea:focus,
+.rwmb-form select:focus {
+    border-color: #2271b1;
+    box-shadow: 0 0 0 1px #2271b1;
+    outline: none;
+}
+
+.rwmb-form .rwmb-error {
+    color: #d63638;
+    font-size: 0.875rem;
+    margin-top: 0.25rem;
+}
+
+.rwmb-form .rwmb-group-wrapper {
+    border: 1px solid #dcdcde;
+    padding: 1rem;
+    margin-bottom: 1rem;
+    border-radius: 4px;
+}
+
+.rwmb-form .rwmb-group-title {
+    font-weight: 600;
+    margin-bottom: 1rem;
+    color: #1d2327;
+}
+
+.rwmb-form .rwmb-group-clone {
+    position: relative;
+    padding: 1rem;
+    background: #f6f7f7;
+    border-radius: 4px;
+    margin-bottom: 1rem;
+}
+
+.rwmb-form .rwmb-group-remove {
+    position: absolute;
+    top: 0.5rem;
+    right: 0.5rem;
+    color: #d63638;
+    cursor: pointer;
+}
+
+.rwmb-form .rwmb-group-add {
+    display: inline-block;
+    padding: 0.5rem 1rem;
+    background: #2271b1;
+    color: #fff;
+    border-radius: 4px;
+    text-decoration: none;
+    margin-top: 0.5rem;
+}
+
+.rwmb-form .rwmb-group-add:hover {
+    background: #135e96;
+}
+
+.rwmb-form .rwmb-file-input {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.rwmb-form .rwmb-file-input input[type="file"] {
+    flex: 1;
+}
+
+.rwmb-form .rwmb-file-info {
+    font-size: 0.875rem;
+    color: #646970;
+}
+
+.rwmb-form .rwmb-file-list {
+    margin-top: 0.5rem;
+}
+
+.rwmb-form .rwmb-file-item {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.5rem;
+    background: #f6f7f7;
+    border-radius: 4px;
+}
+
+.rwmb-form .rwmb-file-icon {
+    width: 24px;
+    height: 24px;
+}
+
+.rwmb-form .rwmb-file-name {
+    flex: 1;
+}
+
+.rwmb-form .rwmb-file-remove {
+    color: #d63638;
+    cursor: pointer;
+}
+
+.rwmb-form .rwmb-submit-wrap {
+    margin-top: 2rem;
+    text-align: center;
+}
+
+.rwmb-form .rwmb-submit-button {
+    padding: 0.75rem 1.5rem;
+    background: #2271b1;
+    color: #fff;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 1rem;
+    font-weight: 600;
+}
+
+.rwmb-form .rwmb-submit-button:hover {
+    background: #135e96;
+}
+
+.rwmb-form .rwmb-confirmation {
+    margin-top: 1rem;
+    padding: 1rem;
+    background: #edfaef;
+    border: 1px solid #68de7c;
+    border-radius: 4px;
+    color: #1a4731;
+}
+
+/* Progress Bar */
+.piper-privacy-progress {
+    margin-bottom: 2rem;
+}
+
+.piper-privacy-progress-bar {
+    display: flex;
+    justify-content: space-between;
+    position: relative;
+    margin-bottom: 1rem;
+}
+
+.piper-privacy-progress-bar::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 0;
+    right: 0;
+    height: 2px;
+    background: #dcdcde;
+    transform: translateY(-50%);
+    z-index: 1;
+}
+
+.piper-privacy-progress-step {
+    position: relative;
+    z-index: 2;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.piper-privacy-progress-marker {
+    width: 24px;
+    height: 24px;
+    background: #fff;
+    border: 2px solid #dcdcde;
+    border-radius: 50%;
+}
+
+.piper-privacy-progress-step.active .piper-privacy-progress-marker {
+    border-color: #2271b1;
+    background: #2271b1;
+}
+
+.piper-privacy-progress-step.completed .piper-privacy-progress-marker {
+    border-color: #68de7c;
+    background: #68de7c;
+}
+
+.piper-privacy-progress-label {
+    font-size: 0.875rem;
+    color: #646970;
+}
+
+.piper-privacy-progress-step.active .piper-privacy-progress-label {
+    color: #2271b1;
+    font-weight: 600;
+}
+
+.piper-privacy-progress-step.completed .piper-privacy-progress-label {
+    color: #1a4731;
+}

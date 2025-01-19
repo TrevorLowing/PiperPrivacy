@@ -6,6 +6,8 @@ namespace PiperPrivacy\Includes\Helpers;
  * Supports both MetaBox and ACF during transition
  */
 
+use PiperPrivacy\Includes\Helpers\MetaboxHelpers;
+
 /**
  * Get a field value
  *
@@ -23,7 +25,7 @@ function pp_get_field($field_name, $post_id = null) {
     if (function_exists('rwmb_meta')) {
         $value = rwmb_meta($field_name, '', $post_id);
         if ($value !== '') {
-            return $value;
+            return MetaboxHelpers::format_field_value($field_name, $value, $post_id);
         }
     }
 
@@ -82,11 +84,9 @@ function pp_the_field($field_name, $post_id = null) {
  */
 function pp_get_field_settings($field_name) {
     // Try MetaBox first
-    if (function_exists('rwmb_get_field_settings')) {
-        $settings = rwmb_get_field_settings($field_name);
-        if ($settings) {
-            return $settings;
-        }
+    $settings = MetaboxHelpers::get_field_settings($field_name);
+    if ($settings) {
+        return $settings;
     }
 
     // Fallback to ACF
@@ -128,8 +128,9 @@ function pp_get_field_choices($field_name) {
  */
 function pp_field_exists($field_name, $post_id = null) {
     // Try MetaBox
-    if (function_exists('rwmb_meta')) {
-        return rwmb_get_field_settings($field_name) !== null;
+    $settings = MetaboxHelpers::get_field_settings($field_name);
+    if ($settings) {
+        return true;
     }
 
     // Try ACF
@@ -155,6 +156,10 @@ function pp_get_fields($post_id = null) {
     if (function_exists('rwmb_meta')) {
         $meta = rwmb_meta_all($post_id);
         if (!empty($meta)) {
+            // Format all values
+            foreach ($meta as $field_name => $value) {
+                $meta[$field_name] = MetaboxHelpers::format_field_value($field_name, $value, $post_id);
+            }
             return $meta;
         }
     }
@@ -200,21 +205,21 @@ function pp_validate_field($field_name, $value) {
                 );
             }
             break;
-
-        case 'number':
-            if (!is_numeric($value)) {
-                return new \WP_Error(
-                    'invalid_number',
-                    __('Value must be a number', 'piper-privacy')
-                );
-            }
-            break;
-
+            
         case 'url':
             if (!filter_var($value, FILTER_VALIDATE_URL)) {
                 return new \WP_Error(
                     'invalid_url',
                     __('Invalid URL', 'piper-privacy')
+                );
+            }
+            break;
+            
+        case 'number':
+            if (!is_numeric($value)) {
+                return new \WP_Error(
+                    'invalid_number',
+                    __('Invalid number', 'piper-privacy')
                 );
             }
             break;
@@ -231,10 +236,8 @@ function pp_validate_field($field_name, $value) {
  * @return array Field values
  */
 function pp_get_group_field($field_name, $post_id = null) {
-    if (!$post_id) {
-        $post_id = get_the_ID();
-    }
-    return pp_get_field($field_name, $post_id) ?: [];
+    $value = pp_get_field($field_name, $post_id);
+    return is_array($value) ? $value : [];
 }
 
 /**
@@ -245,15 +248,12 @@ function pp_get_group_field($field_name, $post_id = null) {
  * @return array Array with 'value' and 'label' keys
  */
 function pp_get_select_field($field_name, $post_id = null) {
-    if (!$post_id) {
-        $post_id = get_the_ID();
-    }
     $value = pp_get_field($field_name, $post_id);
-    $field = pp_get_field_settings($field_name);
+    $choices = pp_get_field_choices($field_name);
     
     return [
         'value' => $value,
-        'label' => isset($field['options'][$value]) ? $field['options'][$value] : $value
+        'label' => $choices[$value] ?? $value,
     ];
 }
 
@@ -265,21 +265,14 @@ function pp_get_select_field($field_name, $post_id = null) {
  * @return array Array of selected values with their labels
  */
 function pp_get_checkbox_list($field_name, $post_id = null) {
-    if (!$post_id) {
-        $post_id = get_the_ID();
-    }
-    $values = pp_get_field($field_name, $post_id);
-    if (!is_array($values)) {
-        return [];
-    }
+    $values = (array) pp_get_field($field_name, $post_id);
+    $choices = pp_get_field_choices($field_name);
     
-    $field = pp_get_field_settings($field_name);
     $result = [];
-    
     foreach ($values as $value) {
         $result[] = [
             'value' => $value,
-            'label' => isset($field['options'][$value]) ? $field['options'][$value] : $value
+            'label' => $choices[$value] ?? $value,
         ];
     }
     
@@ -294,9 +287,6 @@ function pp_get_checkbox_list($field_name, $post_id = null) {
  * @return array File information including URL, path, and metadata
  */
 function pp_get_file_field($field_name, $post_id = null) {
-    if (!$post_id) {
-        $post_id = get_the_ID();
-    }
     return pp_get_field($field_name, $post_id);
 }
 
@@ -309,9 +299,6 @@ function pp_get_file_field($field_name, $post_id = null) {
  * @return array Image information including URL and metadata
  */
 function pp_get_image_field($field_name, $size = 'thumbnail', $post_id = null) {
-    if (!$post_id) {
-        $post_id = get_the_ID();
-    }
     return pp_get_field($field_name, $post_id);
 }
 
@@ -324,14 +311,13 @@ function pp_get_image_field($field_name, $size = 'thumbnail', $post_id = null) {
  * @return string Formatted date
  */
 function pp_get_date_field($field_name, $format = '', $post_id = null) {
-    if (!$post_id) {
-        $post_id = get_the_ID();
-    }
-    if (empty($format)) {
-        $format = get_option('date_format');
-    }
     $value = pp_get_field($field_name, $post_id);
-    return $value ? date($format, strtotime($value)) : '';
+    if (!$value) {
+        return '';
+    }
+
+    $format = $format ?: get_option('date_format');
+    return date_i18n($format, strtotime($value));
 }
 
 /**
@@ -342,11 +328,8 @@ function pp_get_date_field($field_name, $format = '', $post_id = null) {
  * @return string Formatted HTML content
  */
 function pp_get_wysiwyg_field($field_name, $post_id = null) {
-    if (!$post_id) {
-        $post_id = get_the_ID();
-    }
-    $content = pp_get_field($field_name, $post_id);
-    return wpautop($content);
+    $value = pp_get_field($field_name, $post_id);
+    return wpautop($value);
 }
 
 /**
@@ -357,10 +340,8 @@ function pp_get_wysiwyg_field($field_name, $post_id = null) {
  * @return bool True if checked, false otherwise
  */
 function pp_is_checked($field_name, $post_id = null) {
-    if (!$post_id) {
-        $post_id = get_the_ID();
-    }
-    return (bool) pp_get_field($field_name, $post_id);
+    $value = pp_get_field($field_name, $post_id);
+    return !empty($value);
 }
 
 /**
@@ -371,8 +352,8 @@ function pp_is_checked($field_name, $post_id = null) {
  * @return int Number of items in the group
  */
 function pp_get_group_count($field_name, $post_id = null) {
-    $group = pp_get_group_field($field_name, $post_id);
-    return is_array($group) ? count($group) : 0;
+    $value = pp_get_field($field_name, $post_id);
+    return is_array($value) ? count($value) : 0;
 }
 
 /**
@@ -383,22 +364,30 @@ function pp_get_group_count($field_name, $post_id = null) {
  * @return string Formatted address
  */
 function pp_get_address_field($field_name, $post_id = null) {
-    if (!$post_id) {
-        $post_id = get_the_ID();
-    }
     $address = pp_get_field($field_name, $post_id);
     if (!is_array($address)) {
         return '';
     }
-    
+
     $parts = [];
-    if (!empty($address['street'])) $parts[] = $address['street'];
-    if (!empty($address['city'])) $parts[] = $address['city'];
-    if (!empty($address['state'])) $parts[] = $address['state'];
-    if (!empty($address['postal'])) $parts[] = $address['postal'];
-    if (!empty($address['country'])) $parts[] = $address['country'];
-    
-    return implode(', ', $parts);
+    if (!empty($address['street'])) {
+        $parts[] = $address['street'];
+    }
+    if (!empty($address['city'])) {
+        $city_parts = [$address['city']];
+        if (!empty($address['state'])) {
+            $city_parts[] = $address['state'];
+        }
+        if (!empty($address['zip'])) {
+            $city_parts[] = $address['zip'];
+        }
+        $parts[] = implode(', ', $city_parts);
+    }
+    if (!empty($address['country'])) {
+        $parts[] = $address['country'];
+    }
+
+    return implode("\n", $parts);
 }
 
 /**
@@ -410,16 +399,17 @@ function pp_get_address_field($field_name, $post_id = null) {
  * @return mixed User information
  */
 function pp_get_user_field($field_name, $info = 'display_name', $post_id = null) {
-    if (!$post_id) {
-        $post_id = get_the_ID();
-    }
-    $user_id = pp_get_field($field_name, $post_id);
-    if (!$user_id) {
+    $value = pp_get_field($field_name, $post_id);
+    if (!$value) {
         return '';
     }
-    
-    $user = get_userdata($user_id);
-    return $user ? $user->$info : '';
+
+    $user = get_userdata($value);
+    if (!$user) {
+        return '';
+    }
+
+    return $user->$info ?? '';
 }
 
 /**
@@ -430,23 +420,7 @@ function pp_get_user_field($field_name, $info = 'display_name', $post_id = null)
  * @return array Array of term objects
  */
 function pp_get_taxonomy_field($field_name, $post_id = null) {
-    if (!$post_id) {
-        $post_id = get_the_ID();
-    }
-    $terms = pp_get_field($field_name, $post_id);
-    if (!is_array($terms)) {
-        return [];
-    }
-    
-    return array_map(function($term) {
-        return [
-            'id' => $term->term_id,
-            'name' => $term->name,
-            'slug' => $term->slug,
-            'description' => $term->description,
-            'url' => get_term_link($term)
-        ];
-    }, $terms);
+    return pp_get_field($field_name, $post_id);
 }
 
 /**
@@ -457,29 +431,25 @@ function pp_get_taxonomy_field($field_name, $post_id = null) {
  * @return array Color information
  */
 function pp_get_color_field($field_name, $post_id = null) {
-    if (!$post_id) {
-        $post_id = get_the_ID();
+    $value = pp_get_field($field_name, $post_id);
+    if (!$value) {
+        return [
+            'hex' => '',
+            'rgb' => '',
+            'rgba' => '',
+        ];
     }
-    $color = pp_get_field($field_name, $post_id);
-    if (empty($color)) {
-        return null;
-    }
-    
+
     // Convert hex to RGB
-    $hex = ltrim($color, '#');
+    $hex = ltrim($value, '#');
     $r = hexdec(substr($hex, 0, 2));
     $g = hexdec(substr($hex, 2, 2));
     $b = hexdec(substr($hex, 4, 2));
-    
+
     return [
-        'hex' => $color,
-        'rgb' => "rgb($r,$g,$b)",
-        'rgba' => "rgba($r,$g,$b,1)",
-        'components' => [
-            'r' => $r,
-            'g' => $g,
-            'b' => $b
-        ]
+        'hex' => $value,
+        'rgb' => "rgb($r, $g, $b)",
+        'rgba' => "rgba($r, $g, $b, 1)",
     ];
 }
 
@@ -491,25 +461,7 @@ function pp_get_color_field($field_name, $post_id = null) {
  * @return array Map coordinates and location info
  */
 function pp_get_map_field($field_name, $post_id = null) {
-    if (!$post_id) {
-        $post_id = get_the_ID();
-    }
-    $location = pp_get_field($field_name, $post_id);
-    if (!is_array($location)) {
-        return null;
-    }
-    
-    return [
-        'lat' => isset($location['latitude']) ? (float)$location['latitude'] : 0,
-        'lng' => isset($location['longitude']) ? (float)$location['longitude'] : 0,
-        'zoom' => isset($location['zoom']) ? (int)$location['zoom'] : 14,
-        'address' => isset($location['address']) ? $location['address'] : '',
-        'formatted' => sprintf(
-            '%s, %s',
-            isset($location['latitude']) ? $location['latitude'] : '',
-            isset($location['longitude']) ? $location['longitude'] : ''
-        )
-    ];
+    return pp_get_field($field_name, $post_id);
 }
 
 /**
@@ -520,20 +472,18 @@ function pp_get_map_field($field_name, $post_id = null) {
  * @return array Associative array of key-value pairs
  */
 function pp_get_key_value_field($field_name, $post_id = null) {
-    if (!$post_id) {
-        $post_id = get_the_ID();
-    }
-    $pairs = pp_get_group_field($field_name, $post_id);
-    if (!is_array($pairs)) {
+    $value = pp_get_field($field_name, $post_id);
+    if (!is_array($value)) {
         return [];
     }
-    
+
     $result = [];
-    foreach ($pairs as $pair) {
-        if (isset($pair['key']) && isset($pair['value'])) {
-            $result[$pair['key']] = $pair['value'];
+    foreach ($value as $item) {
+        if (isset($item['key']) && isset($item['value'])) {
+            $result[$item['key']] = $item['value'];
         }
     }
+
     return $result;
 }
 
@@ -545,16 +495,17 @@ function pp_get_key_value_field($field_name, $post_id = null) {
  * @return array Range information
  */
 function pp_get_range_field($field_name, $post_id = null) {
-    if (!$post_id) {
-        $post_id = get_the_ID();
-    }
     $value = pp_get_field($field_name, $post_id);
-    
+    if (!is_array($value)) {
+        return [
+            'min' => 0,
+            'max' => 0,
+        ];
+    }
+
     return [
-        'value' => $value,
-        'min' => pp_get_field_settings($field_name)['min'] ?? 0,
-        'max' => pp_get_field_settings($field_name)['max'] ?? 100,
-        'step' => pp_get_field_settings($field_name)['step'] ?? 1
+        'min' => $value['min'] ?? 0,
+        'max' => $value['max'] ?? 0,
     ];
 }
 
@@ -567,14 +518,13 @@ function pp_get_range_field($field_name, $post_id = null) {
  * @return string Formatted time
  */
 function pp_get_time_field($field_name, $format = '', $post_id = null) {
-    if (!$post_id) {
-        $post_id = get_the_ID();
-    }
-    if (empty($format)) {
-        $format = get_option('time_format');
-    }
     $value = pp_get_field($field_name, $post_id);
-    return $value ? date($format, strtotime($value)) : '';
+    if (!$value) {
+        return '';
+    }
+
+    $format = $format ?: get_option('time_format');
+    return date_i18n($format, strtotime($value));
 }
 
 /**
@@ -586,32 +536,7 @@ function pp_get_time_field($field_name, $format = '', $post_id = null) {
  * @return array Post information
  */
 function pp_get_post_field($field_name, $fields = [], $post_id = null) {
-    if (!$post_id) {
-        $post_id = get_the_ID();
-    }
-    $related_post = pp_get_field($field_name, $post_id);
-    if (!$related_post) {
-        return null;
-    }
-    
-    $default_fields = [
-        'ID' => $related_post->ID,
-        'title' => get_the_title($related_post->ID),
-        'permalink' => get_permalink($related_post->ID)
-    ];
-    
-    if (empty($fields)) {
-        return $default_fields;
-    }
-    
-    $result = [];
-    foreach ($fields as $field) {
-        if (isset($related_post->$field)) {
-            $result[$field] = $related_post->$field;
-        }
-    }
-    
-    return array_merge($default_fields, $result);
+    return pp_get_field($field_name, $post_id);
 }
 
 /**
@@ -622,18 +547,18 @@ function pp_get_post_field($field_name, $fields = [], $post_id = null) {
  * @return array Switch state information
  */
 function pp_get_switch_field($field_name, $post_id = null) {
-    if (!$post_id) {
-        $post_id = get_the_ID();
-    }
     $value = pp_get_field($field_name, $post_id);
-    $field = pp_get_field_settings($field_name);
-    
+    $settings = pp_get_field_settings($field_name);
+
+    $states = $settings['states'] ?? [
+        'on' => __('On', 'piper-privacy'),
+        'off' => __('Off', 'piper-privacy'),
+    ];
+
     return [
         'value' => $value,
-        'state' => $value ? 'on' : 'off',
-        'label' => $value ? 
-            ($field['label_on'] ?? 'On') : 
-            ($field['label_off'] ?? 'Off')
+        'label' => $states[$value] ?? $value,
+        'is_on' => $value === 'on' || $value === true || $value === 1,
     ];
 }
 
@@ -649,8 +574,8 @@ function get_currency_symbol($currency) {
         'EUR' => '€',
         'GBP' => '£',
         'JPY' => '¥',
-        // Add more as needed
     ];
+
     return $symbols[$currency] ?? $currency;
 }
 
@@ -663,16 +588,20 @@ function get_currency_symbol($currency) {
  * @return array Currency information
  */
 function pp_get_currency_field($field_name, $currency = 'USD', $post_id = null) {
-    if (!$post_id) {
-        $post_id = get_the_ID();
-    }
     $value = pp_get_field($field_name, $post_id);
-    
+    if (!$value) {
+        return [
+            'amount' => 0,
+            'currency' => $currency,
+            'symbol' => get_currency_symbol($currency),
+            'formatted' => get_currency_symbol($currency) . '0.00',
+        ];
+    }
+
     return [
-        'raw' => $value,
-        'formatted' => number_format($value, 2),
+        'amount' => $value,
         'currency' => $currency,
         'symbol' => get_currency_symbol($currency),
-        'display' => get_currency_symbol($currency) . number_format($value, 2)
+        'formatted' => get_currency_symbol($currency) . number_format($value, 2),
     ];
 }
