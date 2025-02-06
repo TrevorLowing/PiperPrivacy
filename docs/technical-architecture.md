@@ -104,22 +104,149 @@ piper-privacy/
 
 ## Data Flow
 
-1. **Collection Creation**
-   - Department initiates privacy collection
-   - Automated threshold assessment
-   - Workflow triggers based on risk level
+### Overview
+The data flow architecture ensures secure and efficient handling of privacy-related data throughout the system.
 
-2. **Assessment Process**
-   - Threshold evaluation
-   - Impact assessment (if required)
-   - Stakeholder reviews
-   - Final approval/rejection
+### Components
+1. **Collection Layer**
+   - Form handlers
+   - API endpoints
+   - Batch importers
+   - Manual entry interfaces
 
-3. **Ongoing Management**
-   - Regular reviews
-   - Retention management
-   - Compliance monitoring
-   - Audit logging
+2. **Processing Layer**
+   - Data validation
+   - Format conversion
+   - Enrichment
+   - Classification
+
+3. **Storage Layer**
+   - Primary database
+   - Cache system
+   - File storage
+   - Backup system
+
+### Security Controls
+
+#### Access Control
+- Role-based access
+- Permission management
+- Session handling
+- API authentication
+
+#### Data Protection
+- Encryption at rest
+- Secure transmission
+- Key management
+- Data masking
+
+#### Audit Trail
+- Activity logging
+- Change tracking
+- Access monitoring
+- Compliance reporting
+
+### Incident Response
+
+#### Detection
+- Monitoring systems
+- Alert triggers
+- Log analysis
+- User reports
+
+#### Response Process
+1. Initial assessment
+2. Classification
+3. Containment
+4. Investigation
+5. Remediation
+6. Recovery
+
+### Review System
+
+#### Components
+1. **Scheduler**
+   - Review timing
+   - Resource allocation
+   - Notification system
+   - Calendar integration
+
+2. **Assessment Engine**
+   - Criteria evaluation
+   - Score calculation
+   - Risk assessment
+   - Recommendation generation
+
+3. **Documentation**
+   - Version control
+   - Change tracking
+   - Approval workflow
+   - Archive system
+
+### System Integration
+
+#### Integration Points
+1. **Internal Systems**
+   - User management
+   - File storage
+   - Email system
+   - Logging
+
+2. **External Systems**
+   - Third-party APIs
+   - SSO providers
+   - Monitoring services
+   - Backup systems
+
+### Example Implementations
+
+#### Data Collection
+```php
+class DataCollectionHandler {
+    public function handleFormSubmission(array $data): bool {
+        try {
+            // Validate input
+            $validator = new DataValidator($data);
+            if (!$validator->isValid()) {
+                throw new ValidationException($validator->getErrors());
+            }
+
+            // Process data
+            $processor = new DataProcessor();
+            $processedData = $processor->process($data);
+
+            // Store data
+            $storage = new DataStorage();
+            return $storage->store($processedData);
+        } catch (Exception $e) {
+            error_log("Data collection error: " . $e->getMessage());
+            return false;
+        }
+    }
+}
+```
+
+#### Security Implementation
+```php
+class SecurityController {
+    public function validateAccess(string $resource, string $action): bool {
+        // Check user permissions
+        if (!current_user_can('access_privacy_data')) {
+            return false;
+        }
+
+        // Verify nonce
+        if (!wp_verify_nonce($_REQUEST['_wpnonce'], 'privacy_action')) {
+            return false;
+        }
+
+        // Log access attempt
+        $this->logAccess($resource, $action);
+
+        return true;
+    }
+}
+```
 
 ## Integration Points
 

@@ -90,6 +90,36 @@ Request Body:
 }
 ```
 
+### Data Collection
+
+#### Create Collection
+```http
+POST /wp-json/piper-privacy/v1/collections
+```
+
+Request body:
+```json
+{
+  "title": "Customer Survey Data",
+  "description": "Collection of customer feedback data",
+  "dataTypes": ["personal", "contact"],
+  "retention": {
+    "period": 12,
+    "unit": "months"
+  }
+}
+```
+
+#### Update Collection
+```http
+PUT /wp-json/piper-privacy/v1/collections/{id}
+```
+
+#### Delete Collection
+```http
+DELETE /wp-json/piper-privacy/v1/collections/{id}
+```
+
 ### Privacy Thresholds
 
 #### List Thresholds
@@ -118,6 +148,57 @@ Request Body:
     "processing_type": "automated"
   }
 }
+```
+
+### Incident Management
+
+#### Report Incident
+```http
+POST /wp-json/piper-privacy/v1/incidents
+```
+
+Request body:
+```json
+{
+  "type": "data_breach",
+  "severity": "high",
+  "description": "Unauthorized access detected",
+  "affectedData": ["customer_records"],
+  "detectionTime": "2025-02-05T20:30:00Z"
+}
+```
+
+#### Update Incident
+```http
+PUT /wp-json/piper-privacy/v1/incidents/{id}
+```
+
+#### Get Incident Status
+```http
+GET /wp-json/piper-privacy/v1/incidents/{id}/status
+```
+
+### Review Automation
+
+#### Schedule Review
+```http
+POST /wp-json/piper-privacy/v1/reviews
+```
+
+Request body:
+```json
+{
+  "type": "periodic",
+  "target": "data_collection",
+  "targetId": "123",
+  "scheduledDate": "2025-03-01T00:00:00Z",
+  "assignee": "privacy_officer"
+}
+```
+
+#### Get Review Status
+```http
+GET /wp-json/piper-privacy/v1/reviews/{id}
 ```
 
 ### Privacy Impact Assessments
@@ -357,3 +438,69 @@ apply_filters('pp_breach_validation_rules', $rules);
 apply_filters('pp_compliance_data', $data, $id);
 apply_filters('pp_compliance_fields', $fields);
 apply_filters('pp_compliance_validation_rules', $rules);
+
+```
+
+## Example Requests
+
+### cURL Examples
+
+#### Create Collection
+```bash
+curl -X POST \
+  https://your-site.com/wp-json/piper-privacy/v1/collections \
+  -H 'Authorization: Bearer YOUR_TOKEN' \
+  -H 'Content-Type: application/json' \
+  -d '{
+    "title": "Marketing Data",
+    "description": "Customer marketing preferences",
+    "dataTypes": ["contact", "preferences"]
+  }'
+```
+
+#### Report Incident
+```bash
+curl -X POST \
+  https://your-site.com/wp-json/piper-privacy/v1/incidents \
+  -H 'Authorization: Bearer YOUR_TOKEN' \
+  -H 'Content-Type: application/json' \
+  -d '{
+    "type": "unauthorized_access",
+    "severity": "medium",
+    "description": "Suspicious login attempts detected"
+  }'
+```
+
+## Troubleshooting
+
+### Common Issues
+
+1. **Authentication Errors**
+   - Verify API key/token
+   - Check permissions
+   - Validate request headers
+   - Confirm user role
+
+2. **Rate Limiting**
+   - Check current limits
+   - Monitor usage
+   - Handle 429 responses
+   - Implement backoff
+
+3. **Data Validation**
+   - Review request format
+   - Check required fields
+   - Validate data types
+   - Handle validation errors
+
+### Error Responses
+
+```json
+{
+  "code": "error_code",
+  "message": "Human readable message",
+  "data": {
+    "status": 400,
+    "details": "Additional error information"
+  }
+}
