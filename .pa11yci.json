@@ -1,0 +1,15 @@
+{
+  "defaults": {
+    "standard": "WCAG2AA",
+    "timeout": 30000,
+    "wait": 1000,
+    "chromeLaunchConfig": {
+      "args": ["--no-sandbox"]
+    }
+  },
+  "urls": [
+    "http://localhost:8080/wp-admin/admin.php?page=piper-privacy",
+    "http://localhost:8080/wp-admin/admin.php?page=piper-privacy-assessments",
+    "http://localhost:8080/wp-admin/admin.php?page=piper-privacy-settings"
+  ]
+}
