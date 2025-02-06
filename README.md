@@ -1,6 +1,33 @@
 # PiperPrivacy
 
-Complete privacy management system for WordPress with collection lifecycle management, impact assessments, and workflow automation.
+[![License: GPL v2](https://img.shields.io/badge/License-GPL%20v2-blue.svg)](https://www.gnu.org/licenses/old-licenses/gpl-2.0.en.html)
+[![PHP Version](https://img.shields.io/badge/PHP-8.0%2B-purple)](https://php.net)
+[![WordPress Version](https://img.shields.io/badge/WordPress-5.0%2B-blue)](https://wordpress.org)
+
+> A comprehensive WordPress plugin for managing privacy assessments and data collection documentation.
+
+![PiperPrivacy Banner](assets/banner-1544x500.png)
+
+## About PiperPrivacy
+
+PiperPrivacy is a product of Varry LLC, specializing in privacy compliance and automation solutions for organizations handling sensitive data. Our Privacy Management Suite streamlines the process of creating, managing, and maintaining privacy documentation, including Privacy Impact Assessments (PIAs), Data Protection Impact Assessments (DPIAs), and privacy threshold analyses.
+
+### Company Information
+
+- **Company**: Varry LLC DBA PiperPrivacy
+- **Leadership**: Trevor Lowing, Chief Information Officer
+- **Focus**: Privacy Compliance Automation
+- **Target Market**: Organizations with complex privacy compliance needs
+- **Specialization**: Privacy Assessment Automation and Documentation
+- **Compliance Frameworks**: GDPR, CCPA, HIPAA, Privacy Act, and other privacy regulations
+
+### Key Differentiators
+
+- **Comprehensive Workflow**: End-to-end privacy assessment and documentation management
+- **Regulatory Alignment**: Built-in templates and workflows aligned with major privacy regulations
+- **Integration Ready**: Works seamlessly with existing WordPress infrastructure
+- **Accessibility Focus**: WCAG 2.1 compliant interface for universal access
+- **Enterprise Support**: Dedicated support for enterprise customers
 
 ## Features
 
@@ -19,72 +46,42 @@ Complete privacy management system for WordPress with collection lifecycle manag
 ### Consent Management
 - User consent tracking
 - Preference management
-- Consent withdrawal handling
-- Audit trail maintenance
-
-### Breach Notification
-- Incident response management
-- Automated notifications
-- Documentation tools
-- Authority contact management
-
-### Compliance Tracking
-- Compliance monitoring
-- Documentation management
-- Audit logging
-- Reporting tools
+- Consent records maintenance
+- Automated compliance reporting
 
 ## Requirements
 
-- WordPress 6.0+
-- PHP 8.0+
-- MySQL 5.7+ or MariaDB 10.3+
-- Meta Box Pro
-- Fluent Forms Pro
+- WordPress 5.0 or higher
+- PHP 8.0 or higher
+- Classic Editor plugin
+- Meta Box Pro plugin
 
 ## Installation
 
-1. Upload the plugin files to `/wp-content/plugins/piper-privacy`
-2. Install and activate required plugins:
-   - Meta Box Pro
-   - Fluent Forms Pro
-3. Activate PiperPrivacy through the WordPress plugins screen
-4. Configure settings via PiperPrivacy > Settings
+1. Download the latest release
+2. Upload to your WordPress site
+3. Activate the plugin
+4. Configure required settings
+
+For detailed setup instructions, see [Setup Guide](docs/SETUP.md).
 
 ## Documentation
 
-- [Setup Guide](./docs/SETUP.md)
-- [User Guide](./docs/USER_GUIDE.md)
-- [Developer Documentation](./docs/ARCHITECTURE.md)
-- [API Reference](./docs/API.md)
-- [Contributing Guide](./docs/CONTRIBUTING.md)
-
-## Development Environment
-
-### Local WordPress Setup
-- Local WordPress installation using Local by Flywheel
-- Site Location: `C:\Users\trevo\Local Sites\fedxio`
-- Use this local installation for quick plugin testing and development
-
-### Development Workflow
-1. Make changes to the plugin code
-2. Deploy to local WordPress installation for testing
-3. Verify functionality in local environment before committing changes
-
-## Project Status
-
-See [PROJECT_STATUS.md](./PROJECT_STATUS.md) for current development status and roadmap.
+- [User Guide](docs/USER_GUIDE.md)
+- [Admin Guide](docs/ADMIN_GUIDE.md)
+- [Developer Guide](docs/DEVELOPER_GUIDE.md)
+- [API Reference](docs/API.md)
 
 ## Support
 
-- Documentation: [Link]
-- Support forum: [Link]
-- Email support: support@your-domain.com
+For support inquiries, please contact:
+- Email: support@piperprivacy.com
+- Website: https://piperprivacy.com/support
 
 ## License
 
-This project is licensed under the GPL v2 or later.
+This project is licensed under the GPL v2 License - see the [LICENSE](LICENSE.txt) file for details.
 
-## Credits
+## Security
 
-Developed by [Your Organization]
+For security issues, please email security@piperprivacy.com
