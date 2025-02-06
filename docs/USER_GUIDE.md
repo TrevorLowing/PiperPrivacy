@@ -1,151 +1,242 @@
 # User Guide
 
-## Overview
+## Introduction
 
-PiperPrivacy helps organizations manage their privacy compliance through automated workflows and documentation. This guide covers all aspects of using PiperPrivacy effectively.
+Welcome to PiperPrivacy! This guide will help you understand how to use our privacy management system effectively. Whether you're new to privacy management or an experienced professional, this guide will walk you through everything you need to know.
 
-## Table of Contents
+## Why Privacy Management Matters
 
-1. [Dashboard](#dashboard)
-2. [Privacy Assessments](#privacy-assessments)
-3. [Data Collection Documentation](#data-collection)
-4. [Workflows](#workflows)
-5. [Reports](#reports)
-6. [Settings](#settings)
+Before diving into the features, it's essential to understand why privacy management is crucial:
 
-## Dashboard
+- **Legal Compliance**: Organizations must comply with privacy laws like GDPR, CCPA, and HIPAA
+- **Customer Trust**: Proper privacy practices build and maintain customer trust
+- **Risk Management**: Prevents data breaches and their costly consequences
+- **Business Growth**: Enables safe expansion into new markets and services
 
-The dashboard provides an overview of:
-- Pending assessments
-- Recent activities
-- Upcoming reviews
-- Compliance status
-- Quick actions
+## Getting Started
 
-### Key Metrics
-- Risk levels by project
-- Assessment completion rates
-- Documentation status
-- Review deadlines
+### First Steps
+1. **Log into WordPress Admin**
+   - Go to your WordPress dashboard
+   - Look for the "PiperPrivacy" menu item
+   - Click to access the main dashboard
 
-## Privacy Assessments
+2. **Complete Initial Setup**
+   - Enter your organization details
+   - Set up your privacy team members
+   - Configure basic notification settings
+   - Review default templates
 
-### Privacy Threshold Assessment (PTA)
-1. Creating a PTA
-   - Required information
-   - Risk scoring
-   - Documentation requirements
+### Understanding Your Dashboard
 
-2. Review Process
-   - Submission workflow
-   - Review criteria
-   - Approval process
+The dashboard is your command center. Here's what you'll see:
 
-### Privacy Impact Assessment (PIA)
-1. PIA Components
-   - System description
-   - Data flow mapping
-   - Risk assessment
-   - Controls documentation
+1. **Quick Actions** (Top)
+   - Start New Assessment
+   - Review Pending Items
+   - View Reports
+   - Access Settings
 
-2. Conducting a PIA
-   - Step-by-step process
-   - Required documentation
-   - Stakeholder involvement
-   - Review and approval
+2. **Status Overview** (Center)
+   - Active Assessments
+   - Upcoming Reviews
+   - Recent Activities
+   - Compliance Status
 
-## Data Collection
+3. **Notifications** (Right)
+   - Review Requests
+   - Upcoming Deadlines
+   - System Updates
+   - Team Messages
 
-### Data Inventory
-- Adding data elements
-- Categorizing data
-- Mapping data flows
-- Documenting legal basis
+## Core Workflows
 
-### Processing Activities
-- Recording processes
-- Linking to assessments
-- Documenting controls
-- Review cycles
+### 1. Starting a Privacy Assessment
 
-## Workflows
+#### When to Start an Assessment
+Start a new privacy assessment when:
+- Launching a new project
+- Making significant changes to existing processes
+- Introducing new data collection methods
+- Changing how you handle personal data
 
-### Assessment Workflow
-1. Draft Creation
-2. Internal Review
-3. Privacy Officer Review
-4. Implementation
-5. Monitoring
+#### Step-by-Step Guide
+1. Click "New Assessment" from the dashboard
+2. Choose assessment type:
+   - **Threshold Assessment**: Quick evaluation of privacy risks
+   - **Full Impact Assessment**: Detailed privacy analysis
+   - **Data Collection Documentation**: Record data handling practices
 
-### Review Cycles
-- Scheduling reviews
-- Notification system
-- Update process
-- Documentation
+3. Fill in the basic information:
+   ```
+   Project Name: Customer Feedback System
+   Department: Marketing
+   Data Categories: Contact Info, Usage Data
+   Start Date: [Select Date]
+   ```
 
-## Reports
+4. Answer screening questions honestly - they determine your risk level
+5. Save draft or submit for review
 
-### Standard Reports
-- Assessment status
-- Risk levels
-- Documentation coverage
-- Review deadlines
+### 2. Documenting Data Collection
 
-### Custom Reports
-- Report builder
-- Export options
-- Scheduling
-- Distribution
+#### Why Document Data Collection?
+- Creates transparency about data handling
+- Helps meet legal requirements
+- Makes it easier to respond to data requests
+- Enables better data protection
 
-## Settings
+#### Documentation Process
+1. **Identify Data Sources**
+   - List all places where you collect data
+   - Example: Web forms, email lists, customer service
+   
+2. **Categorize the Data**
+   - Personal data (names, emails)
+   - Sensitive data (health, financial)
+   - Usage data (cookies, analytics)
+   
+3. **Document Purpose and Legal Basis**
+   ```
+   Data: Customer Email
+   Purpose: Marketing Communications
+   Legal Basis: Consent
+   Retention: 24 months after last interaction
+   ```
 
-### User Management
-- Role configuration
-- Access controls
-- Permissions
+4. **Map Data Flows**
+   - Where data is stored
+   - Who has access
+   - Third-party sharing
+   - International transfers
 
-### Email Notifications
-- Configuration
-- Templates
-- Scheduling
-- Recipients
+### 3. Managing Privacy Risks
 
-### System Settings
-- General configuration
-- Integration settings
-- Custom fields
-- Templates
+#### Understanding Risk Levels
+
+**Low Risk Example:**
+- Newsletter signup form
+- Basic contact information
+- Clear purpose
+- Standard security measures
+
+**High Risk Example:**
+- Health data collection
+- Automated decision-making
+- Large-scale processing
+- Sensitive personal data
+
+#### Risk Management Steps
+1. **Identify Risks**
+   - Review data handling practices
+   - Consider potential threats
+   - Assess impact on individuals
+
+2. **Implement Controls**
+   - Technical measures (encryption, access control)
+   - Organizational measures (training, policies)
+   - Legal measures (contracts, consent forms)
+
+3. **Monitor and Review**
+   - Regular security checks
+   - Incident response testing
+   - Policy updates
+   - Staff training
 
 ## Best Practices
 
-1. Assessment Management
-   - Regular reviews
-   - Documentation standards
-   - Quality checks
+### 1. Data Collection
+ Only collect necessary data
+ Be transparent about collection
+ Use clear consent mechanisms
+ Don't collect "just in case"
+ Don't hide collection purposes
 
-2. Documentation
-   - Consistent formatting
-   - Clear descriptions
-   - Supporting evidence
-   - Version control
+### 2. Documentation
+ Keep records up to date
+ Use provided templates
+ Include all data flows
+ Don't skip details
+ Don't use vague descriptions
 
-3. Workflow Efficiency
-   - Template usage
-   - Automation
-   - Review cycles
-   - Communication
+### 3. Risk Management
+ Regular reviews
+ Proactive monitoring
+ Team training
+ Don't ignore small risks
+ Don't delay updates
+
+## Common Scenarios
+
+### Scenario 1: New Marketing Campaign
+1. Start with Threshold Assessment
+2. Document data collection
+3. Set up consent mechanisms
+4. Configure email preferences
+5. Monitor engagement
+
+### Scenario 2: Website Update
+1. Review privacy policy
+2. Update cookie notices
+3. Check form permissions
+4. Test data handling
+5. Document changes
+
+### Scenario 3: Data Subject Request
+1. Verify identity
+2. Locate all data
+3. Review and compile
+4. Respond within timeline
+5. Document response
 
 ## Troubleshooting
 
-Common issues and solutions for:
-- Assessment creation
-- Workflow problems
-- Documentation issues
-- System access
+### Common Issues
 
-## Support
+**Problem**: Can't submit assessment
+- Check all required fields
+- Verify file attachments
+- Confirm permissions
+- Clear browser cache
 
-For additional help:
+**Problem**: Missing notifications
+- Check email settings
+- Verify role permissions
+- Update contact info
+- Check spam folder
+
+## Getting Help
+
+### Internal Support
+1. Check the knowledge base
+2. Review training materials
+3. Contact your privacy officer
+4. Submit support ticket
+
+### External Support
 - Email: support@piperprivacy.com
-- Support portal: https://piperprivacy.com/support
-- Documentation: https://piperprivacy.com/docs
+- Phone: 1-800-PRIVACY
+- Web: piperprivacy.com/support
+- Chat: Available 9-5 EST
+
+## Next Steps
+
+1. **Complete Training**
+   - Watch introduction videos
+   - Read documentation
+   - Practice with test data
+   - Join team training
+
+2. **Set Up Your Workspace**
+   - Configure notifications
+   - Customize dashboard
+   - Set up templates
+   - Add team members
+
+3. **Start Small**
+   - Begin with simple assessment
+   - Document one process
+   - Review existing records
+   - Plan regular reviews
+
+Remember: Privacy management is an ongoing process. Take it step by step, and don't hesitate to ask for help when needed.
